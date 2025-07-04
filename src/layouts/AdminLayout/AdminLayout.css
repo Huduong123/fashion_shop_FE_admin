@@ -529,6 +529,10 @@
   margin: 0 auto;
 }
 
+.sidebar-bootstrap.collapsed .sidebar-header-bootstrap .d-flex {
+  justify-content: center;
+}
+
 /* Navigation Styles */
 .nav-section-title {
   font-size: 0.75rem !important;
