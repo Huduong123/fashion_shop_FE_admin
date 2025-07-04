@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import authService from '@/services/authService'
 import './Dashboard.css'
 
 const Dashboard = () => {
+  const [currentUser, setCurrentUser] = useState(null)
+
+  useEffect(() => {
+    const userInfo = authService.getCurrentUser()
+    setCurrentUser(userInfo)
+  }, [])
   return (
     <div className="dashboard-bootstrap">
       {/* Page Header */}
@@ -9,17 +16,20 @@ const Dashboard = () => {
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h1 className="h3 mb-2 fw-bold text-primary">Dashboard</h1>
+              <h1 className="h3 mb-2 fw-bold text-primary">
+                Welcome back, {currentUser?.username || 'Admin'}! 👋
+              </h1>
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mb-0">
                   <li className="breadcrumb-item">
-                    <a href="#" className="text-decoration-none">Venton</a>
+                    <a href="#" className="text-decoration-none">Fashion Shop</a>
                   </li>
                   <li className="breadcrumb-item active text-primary" aria-current="page">
                     Dashboard
                   </li>
                 </ol>
               </nav>
+              <p className="text-muted mb-0">Here's what's happening with your store today.</p>
             </div>
             <button className="btn btn-primary">
               <i className="bi-plus-circle me-2"></i>New Report

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import authService from '@/services/authService'
+import { formatAuthError } from '@/utils/auth'
 import './Login.css'
 
 const Login = () => {
@@ -9,6 +11,9 @@ const Login = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -16,29 +21,44 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     })
+    // Clear error and success when user types
+    if (error) setError('')
+    if (success) setSuccess(false)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
     setLoading(true)
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Login attempt:', formData)
-      setLoading(false)
-      
-      // Simulate successful login
-      if (formData.username && formData.password) {
-        // Save login status to localStorage
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('username', formData.username)
-        
-        // Navigate to dashboard
-        navigate('/dashboard')
-      } else {
-        alert('Please enter both username and password!')
+
+    try {
+      // Validate form inputs
+      if (!formData.username.trim() || !formData.password.trim()) {
+        throw new Error('Please enter both username and password')
       }
-    }, 2000)
+
+      // Call login API
+      const result = await authService.login({
+        username: formData.username.trim(),
+        password: formData.password
+      })
+
+      if (result.success) {
+        // Show success state
+        setError('') // Clear any previous errors  
+        setSuccess(true)
+        // Keep loading true until redirect happens
+        
+        // Add a small delay to let user see the success state
+        setTimeout(() => {
+          navigate('/dashboard', { replace: true })
+        }, 1000)
+      }
+    } catch (error) {
+      setError(formatAuthError(error))
+      setSuccess(false)
+      setLoading(false) // Only stop loading on error
+    }
   }
 
   return (
@@ -63,6 +83,23 @@ const Login = () => {
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+              {/* Error Message */}
+              {error && (
+                <div className="error-message" style={{
+                  background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
+                  border: '1px solid #f87171',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '20px',
+                  color: '#dc2626',
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}>
+                  <i className="bi-exclamation-circle me-2"></i>
+                  {error}
+                </div>
+              )}
+
               <div className="form-group">
                 <label className="form-label">Username</label>
                 <div className="input-wrapper">
@@ -74,6 +111,7 @@ const Login = () => {
                     placeholder="Enter username"
                     className="form-input"
                     required
+                    disabled={loading}
                   />
                   <div className="input-focus-border"></div>
                 </div>
@@ -91,6 +129,7 @@ const Login = () => {
                       placeholder="Enter your password"
                       className="form-input"
                       required
+                      disabled={loading}
                     />
                     <button
                       type="button"
@@ -121,18 +160,28 @@ const Login = () => {
 
               <div className="form-options">
                 <label className="remember-me">
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={loading}
+                  />
                   <span className="checkmark"></span>
                   <span className="remember-text">Remember me</span>
                 </label>
                 <a href="#" className="recovery-link">Forgot password?</a>
               </div>
               
-              <button type="submit" className="signin-button" disabled={loading}>
+              <button type="submit" className="signin-button" disabled={loading || success}>
                 {loading ? (
                   <span className="loading">
                     <div className="spinner"></div>
                     <span>Signing in...</span>
+                  </span>
+                ) : success ? (
+                  <span className="loading">
+                    <i className="bi-check-circle-fill text-success"></i>
+                    <span>Login Successful!</span>
                   </span>
                 ) : (
                   <>
@@ -143,6 +192,16 @@ const Login = () => {
                   </>
                 )}
               </button>
+              
+              {/* Success message when login successful */}
+              {success && (
+                <div className="mt-3 text-center">
+                  <small className="text-success fw-semibold">
+                    <i className="bi-arrow-right me-1"></i>
+                    Redirecting to dashboard...
+                  </small>
+                </div>
+              )}
             </form>
           </div>
         </div>

@@ -4,18 +4,14 @@ import Login from './pages/Login/Login'
 import Dashboard from './pages/Dashboard/Dashboard'
 import AdminLayout from './layouts/AdminLayout/AdminLayout'
 import ImageDemo from './components/ImageDemo'
+import ProtectedRoute from './components/ProtectedRoute'
+import authService from '@/services/authService'
 import './App.css'
-
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-  return isLoggedIn ? children : <Navigate to="/login" replace />
-}
 
 // Public Route Component (redirect to dashboard if logged in)
 const PublicRoute = ({ children }) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-  return isLoggedIn ? <Navigate to="/dashboard" replace /> : children
+  const isAuthenticated = authService.isAuthenticated()
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children
 }
 
 function App() {

@@ -1,23 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import authService from '@/services/authService'
 import './AdminLayout.css'
 
 const AdminLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
 
+  useEffect(() => {
+    // Get current user info
+    const userInfo = authService.getCurrentUser()
+    setCurrentUser(userInfo)
+  }, [])
+
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn')
-    navigate('/login')
+    authService.logout()
+    navigate('/login', { replace: true })
   }
 
   const menuItems = [
     {
       title: 'GENERAL',
       items: [
-        { name: 'Dashboard', icon: 'bi-speedometer2', path: '/dashboard', active: true },
+        { name: 'Dashboard', icon: 'bi-speedometer2', path: '/dashboard' },
         { name: 'Products', icon: 'bi-box-seam', path: '/products' },
         { name: 'Category', icon: 'bi-folder', path: '/category' },
         { name: 'Inventory', icon: 'bi-clipboard-data', path: '/inventory' },
@@ -54,7 +62,7 @@ const AdminLayout = () => {
         {/* Logo Section */}
         <div className="sidebar-header-bootstrap d-flex align-items-center p-3 border-bottom bg-primary">
           <div className="d-flex align-items-center w-100">
-            <div className="logo-icon-bootstrap me-3">
+            <div className={`logo-icon-bootstrap ${!sidebarCollapsed ? 'me-3' : ''}`}>
               <img src="/src/assets/images/logo/logo1.jpg" alt="Logo" className="logo-image-bootstrap" />
             </div>
                          {!sidebarCollapsed && (
@@ -162,9 +170,9 @@ const AdminLayout = () => {
                   />
                 </button>
                 <ul className={`dropdown-menu dropdown-menu-start user-dropdown-custom ${userDropdownOpen ? 'show' : ''}`}>
-                  <li><h6 className="dropdown-header">Admin User</h6></li>
-                  <li><a className="dropdown-item" href="#"><i className="bi-person me-2"></i>Profile</a></li>
-                  <li><a className="dropdown-item" href="#"><i className="bi-gear me-2"></i>Settings</a></li>
+                  <li><h6 className="dropdown-header">{currentUser?.username || 'Admin User'}</h6></li>
+                  <li><button className="dropdown-item" onClick={() => navigate('/profile')}><i className="bi-person me-2"></i>Profile</button></li>
+                  <li><button className="dropdown-item" onClick={() => navigate('/settings')}><i className="bi-gear me-2"></i>Settings</button></li>
                   <li><hr className="dropdown-divider" /></li>
                   <li>
                     <button className="dropdown-item text-danger" onClick={handleLogout}>
