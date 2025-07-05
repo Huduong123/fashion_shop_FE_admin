@@ -13,8 +13,8 @@ class AuthService {
       
       // Backend now returns: { token: "jwt_token", username: "...", message: "..." }
       if (data && data.token) {
-        // Store JWT token with Bearer prefix if not already included
-        const token = data.token.startsWith('Bearer ') ? data.token : `Bearer ${data.token}`
+        // Store raw JWT token (remove Bearer prefix if present)
+        const token = data.token.startsWith('Bearer ') ? data.token.substring(7) : data.token
         
         localStorage.setItem('accessToken', token)
         localStorage.setItem('isLoggedIn', 'true')

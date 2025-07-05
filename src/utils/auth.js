@@ -24,12 +24,15 @@ export const decodeJWT = (token) => {
 
 /**
  * Check if JWT token is expired
- * @param {string} token - JWT token
+ * @param {string} token - JWT token (raw or with Bearer prefix)
  * @returns {boolean} - true if expired, false if valid
  */
 export const isTokenExpired = (token) => {
   try {
-    const decoded = decodeJWT(token)
+    // Handle both raw token and Bearer format for backward compatibility
+    const rawToken = token && token.startsWith('Bearer ') ? token.substring(7) : token
+    
+    const decoded = decodeJWT(rawToken)
     if (!decoded || !decoded.exp) return true
     
     const currentTime = Date.now() / 1000
@@ -41,12 +44,15 @@ export const isTokenExpired = (token) => {
 
 /**
  * Get token expiration time
- * @param {string} token - JWT token
+ * @param {string} token - JWT token (raw or with Bearer prefix)
  * @returns {Date|null} - Expiration date or null
  */
 export const getTokenExpiration = (token) => {
   try {
-    const decoded = decodeJWT(token)
+    // Handle both raw token and Bearer format for backward compatibility
+    const rawToken = token && token.startsWith('Bearer ') ? token.substring(7) : token
+    
+    const decoded = decodeJWT(rawToken)
     if (!decoded || !decoded.exp) return null
     
     return new Date(decoded.exp * 1000)
@@ -57,12 +63,15 @@ export const getTokenExpiration = (token) => {
 
 /**
  * Get user info from JWT token
- * @param {string} token - JWT token
+ * @param {string} token - JWT token (raw or with Bearer prefix)
  * @returns {object|null} - User info or null
  */
 export const getUserFromToken = (token) => {
   try {
-    const decoded = decodeJWT(token)
+    // Handle both raw token and Bearer format for backward compatibility
+    const rawToken = token && token.startsWith('Bearer ') ? token.substring(7) : token
+    
+    const decoded = decodeJWT(rawToken)
     if (!decoded) return null
     
     return {
