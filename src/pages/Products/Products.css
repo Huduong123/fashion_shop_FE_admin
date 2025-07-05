@@ -297,3 +297,168 @@
 .bg-success-subtle { background: #dcfce7 !important; color: #166534 !important; }
 .bg-danger-subtle { background: #fef2f2 !important; color: #991b1b !important; }
 .bg-info-subtle { background: #dbeafe !important; color: #1e40af !important; }
+
+/* =================================================================== */
+/* 6. SEARCH FORM STYLES (GIAO DIỆN TÌM KIẾM) */
+/* =================================================================== */
+
+/* Compact search form styling */
+.card .card-body {
+  padding: 1rem;
+}
+
+.search-form-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dee2e6;
+}
+
+/* Compact form controls */
+.form-control-sm, .form-select-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.input-group-sm {
+  gap: 0;
+}
+
+.input-group-sm .input-group-text {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Compact labels */
+.form-label.mb-1 {
+  margin-bottom: 0.25rem !important;
+  font-size: 0.8rem;
+}
+
+.search-form-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0052cc 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-form-body {
+  padding: 24px;
+}
+
+.search-field-group {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+  margin-bottom: 16px;
+}
+
+.search-field-group:last-child {
+  margin-bottom: 0;
+}
+
+.search-field-group .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.search-field-group .form-label i {
+  color: #0d6efd;
+  width: 16px;
+}
+
+.search-form-container .form-control,
+.search-form-container .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.search-form-container .form-control:focus,
+.search-form-container .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.search-form-container .input-group-text {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.search-btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0052cc 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+.search-btn-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.advanced-search-toggle {
+  background: rgba(13, 110, 253, 0.1);
+  border: 1px solid rgba(13, 110, 253, 0.2);
+  color: #0d6efd;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.advanced-search-section {
+  border-top: 2px solid #e9ecef;
+  padding-top: 20px;
+  margin-top: 16px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-result-badge {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.search-result-badge i {
+  font-size: 0.7rem;
+}

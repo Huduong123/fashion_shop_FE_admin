@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import productService from '@/services/productService'
 import categoryService from '@/services/categoryService'
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
+import ProductSearchForm from '@/components/ProductSearchForm'
 import Toast from '@/components/Toast'
 import './Products.css'
 
@@ -14,6 +15,10 @@ const ProductsManagement = () => {
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [imageErrors, setImageErrors] = useState(new Set())
+  
+  // Search states
+  const [searchFilters, setSearchFilters] = useState({})
+  const [isSearchMode, setIsSearchMode] = useState(false)
   
   // Delete modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -32,13 +37,13 @@ const ProductsManagement = () => {
     loadAllData()
   }, [])
 
-  const loadAllData = async () => {
+  const loadAllData = useCallback(async (searchParams = null) => {
     setLoading(true)
     setError(null)
     
     try {
       const [productsResult, categoriesResult] = await Promise.all([
-        productService.getAllProducts(),
+        searchParams ? productService.searchProducts(searchParams) : productService.getAllProducts(),
         categoryService.getAllCategories()
       ])
 
@@ -56,7 +61,15 @@ const ProductsManagement = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  const handleSearch = useCallback(async (filters) => {
+    setSearchFilters(filters)
+    const hasFilters = Object.keys(filters).length > 0
+    setIsSearchMode(hasFilters)
+    
+    await loadAllData(hasFilters ? filters : null)
+  }, [loadAllData])
 
   const handleCategoryFilter = useCallback((categoryId) => {
     setSelectedCategory(categoryId)
@@ -160,6 +173,11 @@ const ProductsManagement = () => {
     }, {})
   }, [categories, products])
 
+  const displayProducts = useMemo(() => {
+    // In search mode, show all results. Otherwise, show recent 8 products
+    return isSearchMode ? products : products.slice(0, 8)
+  }, [products, isSearchMode])
+
   const recentProducts = useMemo(() => {
     return products.slice(0, 8)
   }, [products])
@@ -191,11 +209,26 @@ const ProductsManagement = () => {
       <div className="d-flex justify-content-between align-items-center mb-4 px-3">
         <div>
           <h2 className="mb-0">Products Management</h2>
+          {isSearchMode && (
+            <small className="text-muted">
+              <i className="bi bi-search me-1"></i>
+              Kết quả tìm kiếm: {products.length} sản phẩm
+            </small>
+          )}
         </div>
         <button className="btn btn-primary" onClick={() => navigate('/products/add')}>
           <i className="bi bi-plus-lg me-2"></i>
           Add Product
         </button>
+      </div>
+
+      {/* Search Form */}
+      <div className="px-3">
+        <ProductSearchForm 
+          onSearch={handleSearch}
+          loading={loading}
+          initialFilters={searchFilters}
+        />
       </div>
 
       {/* Category Filter Tabs */}
@@ -268,8 +301,15 @@ const ProductsManagement = () => {
         ) : (
           <>
             <div className="d-flex justify-content-between align-items-center mb-3 px-3">
-              <h5 className="mb-0">Recent Products</h5>
-              <small className="text-muted">Showing {recentProducts.length} of {products.length} products</small>
+              <h5 className="mb-0">
+                {isSearchMode ? 'Kết quả tìm kiếm' : 'Sản phẩm gần đây'}
+              </h5>
+              <small className="text-muted">
+                {isSearchMode 
+                  ? `Hiển thị ${displayProducts.length} sản phẩm tìm thấy`
+                  : `Hiển thị ${displayProducts.length} trong số ${products.length} sản phẩm`
+                }
+              </small>
             </div>
             <div className="table-responsive w-100">
               <table className="table align-middle products-table w-100">
@@ -305,7 +345,7 @@ const ProductsManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentProducts.map((product, index) => (
+                  {displayProducts.map((product, index) => (
                     <tr key={product.id} className="product-row">
                       <td className="text-center">
                         <span className="fw-bold">{index + 1}</span>

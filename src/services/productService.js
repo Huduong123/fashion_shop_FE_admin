@@ -18,6 +18,57 @@ const productService = {
     }
   },
 
+  // Search products with filters
+  searchProducts: async (searchParams = {}) => {
+    try {
+      const params = new URLSearchParams()
+      
+      // Add search parameters if they exist and are not empty
+      if (searchParams.name && searchParams.name.trim()) {
+        params.append('name', searchParams.name.trim())
+      }
+      if (searchParams.minPrice && searchParams.minPrice > 0) {
+        params.append('minPrice', searchParams.minPrice)
+      }
+      if (searchParams.maxPrice && searchParams.maxPrice > 0) {
+        params.append('maxPrice', searchParams.maxPrice)
+      }
+      if (searchParams.minQuantity && searchParams.minQuantity >= 0) {
+        params.append('minQuantity', searchParams.minQuantity)
+      }
+      if (searchParams.maxQuantity && searchParams.maxQuantity >= 0) {
+        params.append('maxQuantity', searchParams.maxQuantity)
+      }
+      if (searchParams.enabled !== null && searchParams.enabled !== undefined && searchParams.enabled !== '') {
+        params.append('enabled', searchParams.enabled)
+      }
+      if (searchParams.categoryId && searchParams.categoryId > 0) {
+        params.append('categoryId', searchParams.categoryId)
+      }
+      if (searchParams.createdAt) {
+        params.append('createdAt', searchParams.createdAt)
+      }
+      if (searchParams.updatedAt) {
+        params.append('updatedAt', searchParams.updatedAt)
+      }
+
+      const queryString = params.toString()
+      const url = queryString ? `/admin/products?${queryString}` : '/admin/products'
+      
+      const response = await api.get(url)
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      console.error('Error searching products:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to search products'
+      }
+    }
+  },
+
   // Get products by category
   getProductsByCategory: async (categoryId) => {
     try {
