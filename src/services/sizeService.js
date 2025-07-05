@@ -1,0 +1,89 @@
+import api from './api'
+
+const sizeService = {
+  // Get all sizes
+  getAllSizes: async () => {
+    try {
+      const response = await api.get('/admin/sizes')
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      console.error('Error fetching sizes:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch sizes'
+      }
+    }
+  },
+
+  // Get single size
+  getSize: async (sizeId) => {
+    try {
+      const response = await api.get(`/admin/sizes/${sizeId}`)
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      console.error('Error fetching size:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch size'
+      }
+    }
+  },
+
+  // Create size
+  createSize: async (sizeData) => {
+    try {
+      const response = await api.post('/admin/sizes', sizeData)
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      console.error('Error creating size:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to create size'
+      }
+    }
+  },
+
+  // Update size
+  updateSize: async (sizeId, sizeData) => {
+    try {
+      const response = await api.put(`/admin/sizes/${sizeId}`, sizeData)
+      return {
+        success: true,
+        data: response.data
+      }
+    } catch (error) {
+      console.error('Error updating size:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to update size'
+      }
+    }
+  },
+
+  // Delete size
+  deleteSize: async (sizeId) => {
+    try {
+      await api.delete(`/admin/sizes/${sizeId}`)
+      return {
+        success: true
+      }
+    } catch (error) {
+      console.error('Error deleting size:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to delete size'
+      }
+    }
+  }
+}
+
+export default sizeService 
