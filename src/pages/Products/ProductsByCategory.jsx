@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import productService from '@/services/productService'
 import categoryService from '@/services/categoryService'
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
+import ProductSearchForm from '@/components/ProductSearchForm'
 import Toast from '@/components/Toast'
 import './Products.css'
 
@@ -16,6 +17,10 @@ const ProductsByCategory = () => {
   const [imageErrors, setImageErrors] = useState(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [productsPerPage, setProductsPerPage] = useState(10)
+  
+  // Search states
+  const [searchFilters, setSearchFilters] = useState({})
+  const [isSearchMode, setIsSearchMode] = useState(false)
   
   // Delete modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -47,37 +52,71 @@ const ProductsByCategory = () => {
 
   // Reload when pagination changes
   useEffect(() => {
-    loadProductsByCategory()
-  }, [currentPage, productsPerPage])
+    const params = isSearchMode ? searchFilters : null
+    loadProductsByCategory(params)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, productsPerPage, isSearchMode, searchFilters])
 
-  const loadProductsByCategory = useCallback(async () => {
+  const loadProductsByCategory = useCallback(async (searchParams = null) => {
     if (!categoryId) return
     
     setLoading(true)
     setError(null)
     
     try {
-      // Use pagination API for category mode
-      const result = await productService.getProductsByCategoryWithPagination(
-        categoryId, 
-        currentPage - 1, // Backend uses 0-based indexing
-        productsPerPage,
-        'createdAt',
-        'desc'
-      )
+      let result
       
-      if (result.success) {
-        const pageData = result.data
-        setProducts(pageData.content || [])
-        setPaginationInfo({
-          totalElements: pageData.totalElements || 0,
-          totalPages: pageData.totalPages || 0,
-          size: pageData.size || productsPerPage,
-          number: pageData.number || 0,
-          first: pageData.first || true,
-          last: pageData.last || true
-        })
+      if (searchParams && Object.keys(searchParams).length > 0) {
+        // Search mode: use search API with category filter
+        const searchFiltersWithCategory = {
+          ...searchParams,
+          categoryId: parseInt(categoryId)
+        }
+        result = await productService.searchProducts(searchFiltersWithCategory)
+        
+        if (result.success) {
+          // For search mode, we don't use pagination from backend
+          // Instead, we'll handle pagination on frontend
+          const allProducts = result.data || []
+          const startIndex = (currentPage - 1) * productsPerPage
+          const endIndex = startIndex + productsPerPage
+          const paginatedProducts = allProducts.slice(startIndex, endIndex)
+          
+          setProducts(paginatedProducts)
+          setPaginationInfo({
+            totalElements: allProducts.length,
+            totalPages: Math.ceil(allProducts.length / productsPerPage),
+            size: productsPerPage,
+            number: currentPage - 1,
+            first: currentPage === 1,
+            last: currentPage >= Math.ceil(allProducts.length / productsPerPage)
+          })
+        }
       } else {
+        // Normal mode: use pagination API
+        result = await productService.getProductsByCategoryWithPagination(
+          categoryId, 
+          currentPage - 1, // Backend uses 0-based indexing
+          productsPerPage,
+          'createdAt',
+          'desc'
+        )
+        
+        if (result.success) {
+          const pageData = result.data
+          setProducts(pageData.content || [])
+          setPaginationInfo({
+            totalElements: pageData.totalElements || 0,
+            totalPages: pageData.totalPages || 0,
+            size: pageData.size || productsPerPage,
+            number: pageData.number || 0,
+            first: pageData.first || true,
+            last: pageData.last || true
+          })
+        }
+      }
+      
+      if (!result.success) {
         setError(result.message)
       }
     } catch (error) {
@@ -86,6 +125,15 @@ const ProductsByCategory = () => {
       setLoading(false)
     }
   }, [categoryId, currentPage, productsPerPage])
+
+  const handleSearch = useCallback(async (filters) => {
+    setSearchFilters(filters)
+    const hasFilters = Object.keys(filters).length > 0
+    setIsSearchMode(hasFilters)
+    setCurrentPage(1) // Reset to first page when searching
+    
+    await loadProductsByCategory(hasFilters ? filters : null)
+  }, [loadProductsByCategory])
 
   const loadCategoryInfo = useCallback(async () => {
     if (!categoryId) return
@@ -185,7 +233,8 @@ const ProductsByCategory = () => {
         setProductToDelete(null)
         
         // Reload current page to get updated data
-        loadProductsByCategory()
+        const params = isSearchMode ? searchFilters : null
+        loadProductsByCategory(params)
       } else {
         showToast('error', 'Lỗi', result.message || 'Không thể xóa sản phẩm')
       }
@@ -280,11 +329,27 @@ const ProductsByCategory = () => {
           <h2 className="mb-0">
             {category?.name ? `${category.name} Products` : 'Products by Category'}
           </h2>
+          {isSearchMode && (
+            <small className="text-muted">
+              <i className="bi bi-search me-1"></i>
+              Kết quả tìm kiếm: {paginationInfo.totalElements} sản phẩm
+            </small>
+          )}
         </div>
         <button className="btn btn-primary" onClick={() => navigate('/products/add')}>
           <i className="bi bi-plus-lg me-2"></i>
           Add Product
         </button>
+      </div>
+
+      {/* Search Form */}
+      <div className="w-100 px-3">
+        <ProductSearchForm 
+          onSearch={handleSearch}
+          loading={loading}
+          initialFilters={searchFilters}
+          hideCategoryFilter={true}
+        />
       </div>
 
       {/* Products Table */}
