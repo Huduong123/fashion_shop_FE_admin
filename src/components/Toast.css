@@ -1,0 +1,92 @@
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes shrinkWidth {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1060;
+}
+
+.toast-custom {
+  min-width: 300px;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.toast-custom.hiding {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+.toast-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 0 8px;
+}
+
+.toast-progress-bar.animating {
+  animation: shrinkWidth linear;
+}
+
+/* Custom toast header styling */
+.toast-custom .toast-header {
+  border-bottom: none;
+  padding: 12px 16px 8px 16px;
+  background: transparent;
+}
+
+.toast-custom .toast-body {
+  padding: 0 16px 12px 16px;
+  line-height: 1.4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .toast-container {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+  }
+  
+  .toast-custom {
+    min-width: auto;
+    width: 100%;
+    max-width: none;
+  }
+} 

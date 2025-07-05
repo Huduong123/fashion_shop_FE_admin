@@ -1,0 +1,343 @@
+/* --- BIẾN TOÀN CỤC CHO THIẾT KẾ NHẤT QUÁN --- */
+:root {
+  --font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --text-color: #212529;
+  --text-color-muted: #6c757d;
+  --bg-color: #f7f8fc;
+  --card-bg-color: #ffffff;
+  --border-color: #dee2e6;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --info-color: #0dcaf0;
+
+  --border-radius-sm: 0.3rem;
+  --border-radius-md: 0.8rem;
+  --border-radius-lg: 1rem;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+/* --- THIẾT LẬP CƠ BẢN --- */
+body {
+  font-family: var(--font-family-sans-serif);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+.product-detail-container {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* --- HEADER --- */
+.product-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: var(--card-bg-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* --- THẺ CARD CHUNG --- */
+.product-info-card,
+.summary-card,
+.variants-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* Giúp bo góc cho card-header */
+  background-color: var(--card-bg-color);
+}
+
+.product-info-card:hover,
+.summary-card:hover,
+.variants-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-bottom: none;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* --- THÔNG TIN SẢN PHẨM --- */
+.info-group {
+  margin-bottom: 1.5rem;
+}
+
+.info-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-color-muted);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #e9ecef;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+.description-content .info-value {
+  min-height: 120px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* --- THẺ TỔNG QUAN --- */
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.summary-item:first-child {
+  padding-top: 0;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: var(--text-color-muted);
+  font-size: 0.95rem;
+}
+
+.summary-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.summary-value.text-success { color: var(--success-color) !important; }
+.summary-value.text-danger { color: var(--danger-color) !important; }
+
+
+/* --- BIẾN THỂ SẢN PHẨM --- */
+.variants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.variant-card {
+  background: var(--card-bg-color);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.variant-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.variant-card.selected {
+  border-color: var(--primary-color);
+  background-color: #f4f6ff;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Checkmark cho biến thể được chọn */
+.variant-card.selected::after {
+  content: '✔';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+
+.variant-image {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.variant-image img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.variant-card:hover .variant-image img {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.variant-title {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.variant-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.9rem;
+  color: var(--text-color-muted);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.detail-value.price {
+  color: var(--success-color);
+  font-size: 1.15rem;
+}
+
+.detail-value.quantity {
+  color: var(--info-color);
+}
+
+.detail-value.quantity.out-of-stock {
+  color: var(--danger-color);
+}
+
+.stock-status {
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* --- ANIMATION & RESPONSIVE --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-info-card,
+.summary-card,
+.variants-card {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.variant-card {
+  animation: fadeInUp 0.5s ease-out forwards;
+  /* Thêm delay cho mỗi card để hiệu ứng đẹp hơn */
+}
+/* Bạn có thể thêm JS để gán animation-delay cho mỗi card */
+
+/* Tùy chỉnh Badge của Bootstrap */
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.9em;
+  font-weight: 600;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 992px) {
+  .product-detail-container {
+    padding: 1.5rem;
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+  .row > * { /* Thêm khoảng cách giữa các cột trên mobile */
+    margin-bottom: 1.5rem;
+  }
+  .row > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-detail-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .variants-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-detail-container {
+    padding: 1rem;
+  }
+  .detail-row {
+    align-items: flex-start;
+  }
+  .variant-card {
+    padding: 1rem;
+  }
+}
