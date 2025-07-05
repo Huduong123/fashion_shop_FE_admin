@@ -127,4 +127,7 @@ const productService = {
   }
 }
 
+// Add alias for convenience
+productService.getProductById = productService.getProduct
+
 export default productService 

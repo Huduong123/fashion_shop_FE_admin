@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import productService from '@/services/productService'
 import categoryService from '@/services/categoryService'
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
+import Toast from '@/components/Toast'
 import './Products.css'
 
 const ProductsManagement = () => {
@@ -12,6 +14,19 @@ const ProductsManagement = () => {
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [imageErrors, setImageErrors] = useState(new Set())
+  
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [productToDelete, setProductToDelete] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+  
+  // Toast states
+  const [toast, setToast] = useState({
+    show: false,
+    type: 'success',
+    title: '',
+    message: ''
+  })
 
   useEffect(() => {
     loadAllData()
@@ -80,6 +95,62 @@ const ProductsManagement = () => {
     }
     return product.productVariants[0]?.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image'
   }, [imageErrors])
+
+  // Toast functions
+  const showToast = useCallback((type, title, message = '') => {
+    setToast({
+      show: true,
+      type,
+      title,
+      message
+    })
+  }, [])
+
+  const hideToast = useCallback(() => {
+    setToast(prev => ({
+      ...prev,
+      show: false
+    }))
+  }, [])
+
+  // Delete functions
+  const handleDeleteClick = useCallback((product) => {
+    setProductToDelete(product)
+    setShowDeleteModal(true)
+  }, [])
+
+  const handleDeleteCancel = useCallback(() => {
+    setShowDeleteModal(false)
+    setProductToDelete(null)
+  }, [])
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!productToDelete) return
+
+    setDeleting(true)
+    try {
+      const result = await productService.deleteProduct(productToDelete.id)
+      
+      if (result.success) {
+        // Remove product from state immediately for better UX
+        setProducts(prev => prev.filter(p => p.id !== productToDelete.id))
+        
+        // Show success toast
+        showToast('success', 'Thành công', `Đã xóa sản phẩm "${productToDelete.name}"`)
+        
+        // Hide modal
+        setShowDeleteModal(false)
+        setProductToDelete(null)
+      } else {
+        showToast('error', 'Lỗi', result.message || 'Không thể xóa sản phẩm')
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      showToast('error', 'Lỗi', 'Có lỗi xảy ra khi xóa sản phẩm')
+    } finally {
+      setDeleting(false)
+    }
+  }, [productToDelete, showToast])
 
   // Memoize expensive calculations
   const categoryProductCounts = useMemo(() => {
@@ -313,7 +384,7 @@ const ProductsManagement = () => {
                             className="btn btn-outline-info btn-sm action-btn me-1"
                             title="Xem chi tiết"
                             onClick={() => {
-                              console.log('View details for product:', product.id)
+                              navigate(`/products/detail/${product.id}`)
                             }}
                           >
                             <i className="bi bi-eye"></i>
@@ -322,7 +393,7 @@ const ProductsManagement = () => {
                             className="btn btn-outline-warning btn-sm action-btn me-1"
                             title="Chỉnh sửa"
                             onClick={() => {
-                              console.log('Edit product:', product.id)
+                              navigate(`/products/edit/${product.id}`)
                             }}
                           >
                             <i className="bi bi-pencil"></i>
@@ -330,11 +401,7 @@ const ProductsManagement = () => {
                           <button 
                             className="btn btn-outline-danger btn-sm action-btn"
                             title="Xóa"
-                            onClick={() => {
-                              if (window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${product.name}"?`)) {
-                                console.log('Delete product:', product.id)
-                              }
-                            }}
+                            onClick={() => handleDeleteClick(product)}
                           >
                             <i className="bi bi-trash"></i>
                           </button>
@@ -348,6 +415,24 @@ const ProductsManagement = () => {
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onHide={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        productName={productToDelete?.name || ''}
+        loading={deleting}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        show={toast.show}
+        onHide={hideToast}
+        type={toast.type}
+        title={toast.title}
+        message={toast.message}
+      />
     </div>
   )
 }

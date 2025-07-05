@@ -7,7 +7,9 @@ import ImageDemo from './components/ImageDemo'
 import ProtectedRoute from './components/ProtectedRoute'
 import ProductsManagement from './pages/Products/ProductsManagement'
 import ProductsByCategory from './pages/Products/ProductsByCategory'
-import AddProduct from './pages/AddProduct/AddProduct'
+import AddProduct from './pages/Products/AddProduct/AddProduct'
+import EditProduct from './pages/Products/EditProduct/EditProduct'
+import ProductDetail from './pages/Products/ProductDetail/ProductDetail'
 import authService from '@/services/authService'
 import './App.css'
 
@@ -66,6 +68,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<ProductsManagement />} />
           <Route path="products/add" element={<AddProduct />} />
+          <Route path="products/edit/:productId" element={<EditProduct />} />
+          <Route path="products/detail/:id" element={<ProductDetail />} />
           <Route path="products/category/:categoryId" element={<ProductsByCategory />} />
           <Route path="category" element={<div>Category Page (Coming Soon)</div>} />
           <Route path="inventory" element={<div>Inventory Page (Coming Soon)</div>} />

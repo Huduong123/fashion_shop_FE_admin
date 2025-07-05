@@ -33,7 +33,7 @@ class AuthService {
           message: data.message
         }
       } else {
-        throw new Error('Token not received from server')
+        throw new Error('Không nhận được token từ máy chủ')
       }
     } catch (error) {
       // Clear any existing auth data on login failure
@@ -56,22 +56,22 @@ class AuthService {
         
         switch (status) {
           case 400:
-            throw new Error(message || 'Invalid request. Please check your input')
+            throw new Error(message || 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin')
           case 401:
-            throw new Error(message || 'Invalid username or password')
+            throw new Error(message || 'Tài khoản hoặc mật khẩu không chính xác')
           case 403:
-            throw new Error(message || 'Access denied')
+            throw new Error(message || 'Không có quyền truy cập')
           case 404:
-            throw new Error('Login service not available')
+            throw new Error('Dịch vụ đăng nhập không khả dụng')
           case 500:
-            throw new Error('Server error. Please try again later')
+            throw new Error('Lỗi máy chủ. Vui lòng thử lại sau')
           default:
-            throw new Error(message || 'Login failed. Please try again')
+            throw new Error(message || 'Đăng nhập thất bại. Vui lòng thử lại')
         }
-      } else if (error.request) {
-        throw new Error('Cannot connect to server. Please check your connection')
+              } else if (error.request) {
+        throw new Error('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng')
       } else {
-        throw new Error(error.message || 'An unexpected error occurred')
+        throw new Error(error.message || 'Đã xảy ra lỗi không mong muốn')
       }
     }
   }
