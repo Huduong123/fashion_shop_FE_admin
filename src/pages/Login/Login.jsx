@@ -44,6 +44,12 @@ const Login = () => {
       })
 
       if (result.success) {
+        // Debug: Log token format (only in development)
+        if (import.meta.env.DEV) {
+          const storedToken = localStorage.getItem('accessToken')
+          console.log('✅ Login successful! Token format:', storedToken?.substring(0, 30) + '...')
+        }
+        
         // Show success state
         setError('') // Clear any previous errors  
         setSuccess(true)

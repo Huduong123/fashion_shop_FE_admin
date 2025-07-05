@@ -17,7 +17,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken')
     if (token) {
-      // Token is already stored with "Bearer " prefix
+      // Send raw JWT token (backend will handle both raw and Bearer format)
       config.headers.Authorization = token
     }
     return config

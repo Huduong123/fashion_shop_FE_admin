@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import authService from '@/services/authService'
+import categoryService from '@/services/categoryService'
 import './AdminLayout.css'
 
 const AdminLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
+  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -14,7 +18,24 @@ const AdminLayout = () => {
     // Get current user info
     const userInfo = authService.getCurrentUser()
     setCurrentUser(userInfo)
+    
+    // Load categories for products dropdown
+    loadCategories()
   }, [])
+
+  const loadCategories = async () => {
+    setCategoriesLoading(true)
+    try {
+      const result = await categoryService.getAllCategories()
+      if (result.success) {
+        setCategories(result.data)
+      }
+    } catch (error) {
+      // Silently handle error
+    } finally {
+      setCategoriesLoading(false)
+    }
+  }
 
   const handleLogout = () => {
     authService.logout()
@@ -26,7 +47,17 @@ const AdminLayout = () => {
       title: 'GENERAL',
       items: [
         { name: 'Dashboard', icon: 'bi-speedometer2', path: '/dashboard' },
-        { name: 'Products', icon: 'bi-box-seam', path: '/products' },
+        { 
+          name: 'Products', 
+          icon: 'bi-box-seam', 
+          path: '/products',
+          hasDropdown: true,
+          dropdownItems: categories.map(category => ({
+            name: category.name,
+            path: `/products/category/${category.id}`,
+            categoryId: category.id
+          }))
+        },
         { name: 'Category', icon: 'bi-folder', path: '/category' },
         { name: 'Inventory', icon: 'bi-clipboard-data', path: '/inventory' },
         { name: 'Orders', icon: 'bi-cart3', path: '/orders' },
@@ -83,20 +114,58 @@ const AdminLayout = () => {
               <ul className="list-unstyled mb-0">
                 {section.items.map((item, itemIndex) => (
                   <li key={itemIndex} className="nav-item-bootstrap mb-1">
+                    {/* Main menu item */}
                     <button 
                       className={`btn nav-link-bootstrap d-flex align-items-center w-100 text-start border-0 rounded-2 ${location.pathname === item.path ? 'active bg-primary text-white' : 'text-dark'}`}
-                      onClick={() => navigate(item.path)}
+                      onClick={() => {
+                        if (item.hasDropdown) {
+                          setProductsDropdownOpen(!productsDropdownOpen)
+                        } else {
+                          navigate(item.path)
+                        }
+                      }}
                     >
                       <i className={`${item.icon} me-3`} style={{fontSize: '1.1rem'}}></i>
                       {!sidebarCollapsed && (
                         <>
                           <span className="nav-text-bootstrap">{item.name}</span>
-                          {item.name === 'Products' && (
-                            <i className="bi-chevron-down ms-auto" style={{fontSize: '0.8rem'}}></i>
+                          {item.hasDropdown && (
+                            <i 
+                              className={`bi-chevron-${productsDropdownOpen ? 'up' : 'down'} ms-auto transition-all`} 
+                              style={{fontSize: '0.8rem'}}
+                            ></i>
                           )}
                         </>
                       )}
                     </button>
+                    
+                    {/* Dropdown items */}
+                    {item.hasDropdown && !sidebarCollapsed && (
+                      <div className={`dropdown-submenu ${productsDropdownOpen ? 'show' : ''}`}>
+                        <ul className="list-unstyled ps-4 mt-1">
+                          {categoriesLoading ? (
+                            <li className="text-muted small px-3 py-1">
+                              <i className="bi-spinner spin me-2"></i>Loading...
+                            </li>
+                          ) : item.dropdownItems.length > 0 ? (
+                            item.dropdownItems.map((subItem, subIndex) => (
+                              <li key={subIndex} className="mb-1">
+                                <button
+                                  className={`btn nav-link-bootstrap d-flex align-items-center w-100 text-start border-0 rounded-2 text-muted ${location.pathname === subItem.path ? 'bg-light text-primary' : ''}`}
+                                  onClick={() => navigate(subItem.path)}
+                                  style={{fontSize: '0.9rem', padding: '8px 12px'}}
+                                >
+                                  <i className="bi-circle me-2" style={{fontSize: '0.6rem'}}></i>
+                                  {subItem.name}
+                                </button>
+                              </li>
+                            ))
+                          ) : (
+                            <li className="text-muted small px-3 py-1">No categories found</li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

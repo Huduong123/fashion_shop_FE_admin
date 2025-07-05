@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import AdminLayout from './layouts/AdminLayout/AdminLayout'
 import ImageDemo from './components/ImageDemo'
 import ProtectedRoute from './components/ProtectedRoute'
+import Products from './pages/Products/Products'
 import authService from '@/services/authService'
 import './App.css'
 
@@ -61,7 +62,8 @@ function App() {
           {/* Nested routes that will render inside AdminLayout */}
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<div>Products Page (Coming Soon)</div>} />
+          <Route path="products" element={<Products />} />
+          <Route path="products/category/:categoryId" element={<Products />} />
           <Route path="category" element={<div>Category Page (Coming Soon)</div>} />
           <Route path="inventory" element={<div>Inventory Page (Coming Soon)</div>} />
           <Route path="orders" element={<div>Orders Page (Coming Soon)</div>} />

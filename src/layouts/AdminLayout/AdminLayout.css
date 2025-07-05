@@ -832,4 +832,71 @@
 .header-bootstrap .btn:focus {
   outline: 2px solid #3b82f6 !important;
   outline-offset: 2px !important;
-} 
+}
+
+/* Products Dropdown Submenu */
+.dropdown-submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.dropdown-submenu.show {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.dropdown-submenu ul {
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  padding: 8px 0;
+  backdrop-filter: blur(5px);
+}
+
+.dropdown-submenu .nav-link-bootstrap {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  margin: 2px 8px;
+  border-radius: 6px;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.dropdown-submenu .nav-link-bootstrap:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  transform: translateX(2px);
+}
+
+.dropdown-submenu .nav-link-bootstrap.bg-light {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #3b82f6 !important;
+  font-weight: 600;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Chevron icon smooth rotation */
+.bi-chevron-up,
+.bi-chevron-down {
+  transition: transform 0.2s ease;
+}
+
+/* Hide dropdown when sidebar collapsed */
+.sidebar-bootstrap.collapsed .dropdown-submenu {
+  display: none;
+}

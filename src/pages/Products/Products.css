@@ -1,0 +1,299 @@
+/* =================================================================== */
+/* 1. OPTIMIZATION & ANIMATION DISABLE (GIỮ NGUYÊN TỪ CODE CỦA BẠN) */
+/* =================================================================== */
+
+* {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+*::before, *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Các quy tắc tắt animation và tối ưu hóa hiệu năng khác được giữ nguyên */
+.products-table, .table, .table *, .card, .btn {
+  will-change: auto !important;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  animation: none !important;
+  transition: none !important;
+}
+.table-hover > tbody > tr:hover > * {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* =================================================================== */
+/* 2. MAIN LAYOUT & WRAPPER (KHUNG VIỀN MỚI CHO CẢ BẢNG VÀ PHÂN TRANG) */
+/* =================================================================== */
+
+/* 
+  QUAN TRỌNG: Để có hiệu ứng khung viền đẹp nhất, bạn cần bọc
+  <div class="table-responsive">...</div> và <div class="pagination-container">...</div>
+  bên trong một div cha mới có class="product-table-wrapper".
+
+  Ví dụ trong file .jsx của bạn:
+  
+  <div className="product-table-wrapper">
+    <div className="table-responsive">
+      <table className="table ...">...</table>
+    </div>
+    {isCategoryMode && paginationData && (
+      <div className="pagination-container">...</div>
+    )}
+  </div>
+*/
+
+.product-table-wrapper {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6; /* Viền xám nhạt, nhẹ nhàng hơn */
+  border-radius: 0.5rem; /* Bo góc 8px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); /* Bóng đổ mềm mại */
+  overflow: hidden; /* Đảm bảo các thành phần con tuân thủ bo góc */
+}
+
+/* =================================================================== */
+/* 3. ENHANCED TABLE STYLES (GIAO DIỆN BẢNG ĐƯỢC CẢI TIẾN) */
+/* =================================================================== */
+
+.products-table {
+  border-collapse: collapse;
+  margin-bottom: 0; /* Bỏ margin bottom để dính liền với phân trang */
+}
+
+.products-table thead th {
+  background-color: #f8f9fa; /* Màu nền header nhạt */
+  color: #495057; /* Màu chữ tối hơn, dễ đọc */
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6; /* Viền dưới header */
+  border-top: none;
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+}
+
+.products-table thead th i {
+  color: #6c757d;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.product-row td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid #e9ecef; /* Đường kẻ ngang giữa các dòng */
+}
+
+/* Thêm màu nền xen kẽ cho các dòng để dễ đọc */
+.product-row:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+/* Bỏ viền trên của dòng đầu tiên để không bị double-border với header */
+.products-table tbody tr:first-child td {
+  border-top: none;
+}
+
+/* Product Info Styling */
+.product-image-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.product-name {
+  color: #212529;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.product-meta {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.price-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #198754;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem !important;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+/* Bỏ các hiệu ứng không cần thiết để tuân thủ yêu cầu */
+.action-btn:hover, .action-btn:focus {
+   background-color: #f1f3f5;
+   border-color: transparent;
+   box-shadow: none !important;
+   transform: none !important;
+}
+
+/* =================================================================== */
+/* 4. ENHANCED PAGINATION STYLES (GIAO DIỆN PHÂN TRANG MỚI) */
+/* =================================================================== */
+
+.pagination-container {
+  background: #f8f9fa; /* Nền đồng bộ với header của bảng */
+  border-top: 1px solid #dee2e6; /* Đường kẻ phân cách với bảng */
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+  gap: 1rem;
+}
+
+.pagination-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+  background-color: #e9ecef;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.375rem;
+}
+
+.pagination {
+  margin-bottom: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Thêm bóng đổ nhẹ cho cụm nút */
+  border-radius: 0.375rem;
+}
+
+.pagination .page-link {
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 0.45rem 0.85rem;
+  margin: 0;
+  font-weight: 500;
+  background-color: #fff;
+  font-size: 0.875rem;
+}
+
+.pagination .page-item:first-child .page-link {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+.pagination .page-item:last-child .page-link {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
+.pagination .page-item.active .page-link {
+  background: #6366f1; /* Màu primary bạn đang dùng */
+  border-color: #6366f1;
+  color: white;
+  font-weight: 600;
+  z-index: 3;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #adb5bd;
+  background: #f1f3f5;
+  border-color: #dee2e6;
+}
+
+/* Loại bỏ hiệu ứng hover theo yêu cầu */
+.pagination .page-link:hover, .pagination .page-link:focus {
+  background-color: #fff;
+  color: #495057;
+  box-shadow: none;
+  transform: none;
+}
+.pagination .page-item.active .page-link:hover {
+  background-color: #6366f1;
+  color: white;
+}
+
+/* Styling cho dropdown "Hiển thị" */
+.form-select-sm {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* =================================================================== */
+/* 5. RESPONSIVE ADJUSTMENTS (TINH CHỈNH CHO DI ĐỘNG) */
+/* =================================================================== */
+
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Ẩn các cột không quan trọng trên tablet */
+  .products-table th:nth-child(n+7),
+  .products-table td:nth-child(n+7) {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .pagination-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Ẩn thêm cột trên mobile */
+  .products-table th:nth-child(n+5),
+  .products-table td:nth-child(n+5) {
+    display: none;
+  }
+}
+
+/* Các styles cũ khác bạn có thể giữ lại nếu cần */
+.cursor-pointer { cursor: pointer; }
+.price-text { font-weight: 600; color: #0d6efd; }
+.badge-status { font-size: 0.75rem; }
+.product-image { height: 180px; object-fit: cover; width: 100%; }
+.card-shadow { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+.bg-success-subtle { background: #dcfce7 !important; color: #166534 !important; }
+.bg-danger-subtle { background: #fef2f2 !important; color: #991b1b !important; }
+.bg-info-subtle { background: #dbeafe !important; color: #1e40af !important; }
