@@ -10,15 +10,24 @@ import './Products.css'
 const ProductsManagement = () => {
   const navigate = useNavigate()
   const [products, setProducts] = useState([])
+  const [allProducts, setAllProducts] = useState([]) // Store all products for pagination
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [imageErrors, setImageErrors] = useState(new Set())
   
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1)
+  const [productsPerPage, setProductsPerPage] = useState(10)
+  
   // Search states
   const [searchFilters, setSearchFilters] = useState({})
   const [isSearchMode, setIsSearchMode] = useState(false)
+  
+  // Category pagination states
+  const [currentCategoryPage, setCurrentCategoryPage] = useState(0)
+  const categoriesPerPage = 4
   
   // Delete modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -37,6 +46,16 @@ const ProductsManagement = () => {
     loadAllData()
   }, [])
 
+  // Reset category page when categories change
+  useEffect(() => {
+    setCurrentCategoryPage(0)
+  }, [categories.length])
+
+  // Update products when pagination changes
+  useEffect(() => {
+    updateDisplayedProducts()
+  }, [currentPage, productsPerPage, allProducts, isSearchMode])
+
   const loadAllData = useCallback(async (searchParams = null) => {
     setLoading(true)
     setError(null)
@@ -48,7 +67,9 @@ const ProductsManagement = () => {
       ])
 
       if (productsResult.success) {
-        setProducts(productsResult.data)
+        setAllProducts(productsResult.data)
+        // Reset to first page when loading new data
+        setCurrentPage(1)
       } else {
         setError(productsResult.message)
       }
@@ -62,6 +83,13 @@ const ProductsManagement = () => {
       setLoading(false)
     }
   }, [])
+
+  const updateDisplayedProducts = useCallback(() => {
+    const startIndex = (currentPage - 1) * productsPerPage
+    const endIndex = startIndex + productsPerPage
+    const displayedProducts = allProducts.slice(startIndex, endIndex)
+    setProducts(displayedProducts)
+  }, [currentPage, productsPerPage, allProducts])
 
   const handleSearch = useCallback(async (filters) => {
     setSearchFilters(filters)
@@ -145,7 +173,8 @@ const ProductsManagement = () => {
       const result = await productService.deleteProduct(productToDelete.id)
       
       if (result.success) {
-        // Remove product from state immediately for better UX
+        // Remove product from both displayed and all products
+        setAllProducts(prev => prev.filter(p => p.id !== productToDelete.id))
         setProducts(prev => prev.filter(p => p.id !== productToDelete.id))
         
         // Show success toast
@@ -165,22 +194,74 @@ const ProductsManagement = () => {
     }
   }, [productToDelete, showToast])
 
+  // Pagination functions
+  const handlePageChange = useCallback((pageNumber) => {
+    setCurrentPage(pageNumber)
+  }, [])
+
+  const handleProductsPerPageChange = useCallback((newPerPage) => {
+    setProductsPerPage(newPerPage)
+    setCurrentPage(1) // Reset to first page when changing items per page
+  }, [])
+
   // Memoize expensive calculations
   const categoryProductCounts = useMemo(() => {
     return categories.reduce((counts, category) => {
-      counts[category.id] = products.filter(p => p.categoryId === category.id).length
+      counts[category.id] = allProducts.filter(p => p.categoryId === category.id).length
       return counts
     }, {})
-  }, [categories, products])
+  }, [categories, allProducts])
 
-  const displayProducts = useMemo(() => {
-    // In search mode, show all results. Otherwise, show recent 8 products
-    return isSearchMode ? products : products.slice(0, 8)
-  }, [products, isSearchMode])
+  // Pagination data
+  const paginationData = useMemo(() => {
+    const totalProducts = allProducts.length
+    const totalPages = Math.ceil(totalProducts / productsPerPage)
+    const indexOfFirstProduct = (currentPage - 1) * productsPerPage
+    const indexOfLastProduct = Math.min(indexOfFirstProduct + productsPerPage, totalProducts)
+    
+    return {
+      totalElements: totalProducts,
+      totalPages,
+      indexOfFirstProduct,
+      indexOfLastProduct,
+      currentPage,
+      productsPerPage
+    }
+  }, [allProducts.length, currentPage, productsPerPage])
 
-  const recentProducts = useMemo(() => {
-    return products.slice(0, 8)
-  }, [products])
+  const getPaginationItems = useMemo(() => {
+    if (!paginationData) return []
+    
+    const items = []
+    const maxVisiblePages = 5
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+    let endPage = Math.min(paginationData.totalPages, startPage + maxVisiblePages - 1)
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1)
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(i)
+    }
+    
+    return items
+  }, [currentPage, paginationData])
+
+  // Category pagination logic
+  const totalCategoryPages = useMemo(() => {
+    return Math.ceil(categories.length / categoriesPerPage)
+  }, [categories.length, categoriesPerPage])
+
+  const currentPageCategories = useMemo(() => {
+    const startIndex = currentCategoryPage * categoriesPerPage
+    const endIndex = startIndex + categoriesPerPage
+    return categories.slice(startIndex, endIndex)
+  }, [categories, currentCategoryPage, categoriesPerPage])
+
+  const handleCategoryPageChange = useCallback((pageIndex) => {
+    setCurrentCategoryPage(pageIndex)
+  }, [])
 
   if (loading) {
     return (
@@ -212,7 +293,7 @@ const ProductsManagement = () => {
           {isSearchMode && (
             <small className="text-muted">
               <i className="bi bi-search me-1"></i>
-              Kết quả tìm kiếm: {products.length} sản phẩm
+              Kết quả tìm kiếm: {allProducts.length} sản phẩm
             </small>
           )}
         </div>
@@ -232,41 +313,28 @@ const ProductsManagement = () => {
       </div>
 
       {/* Category Filter Tabs */}
-      <div className="card mb-4 mx-3">
+      <div className="card mb-4 mx-3 category-section">
         <div className="card-body">
-          <div className="d-flex align-items-center mb-3">
-            <h6 className="mb-0 me-3">Filter by Category:</h6>
-            <div className="btn-group" role="group">
-              <button
-                className={`btn ${selectedCategory === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
-                onClick={() => handleCategoryFilter('all')}
-              >
-                All Products ({products.length})
-              </button>
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  className={`btn ${selectedCategory === category.id ? 'btn-primary' : 'btn-outline-primary'}`}
-                  onClick={() => handleCategoryFilter(category.id)}
-                >
-                  {category.name} ({categoryProductCounts[category.id] || 0})
-                </button>
-              ))}
-            </div>
+          {/* Category Title */}
+          <div className="mb-2">
+            <h5 className="card-title mb-0">
+              <i className="bi bi-folder2-open me-2 text-primary"></i>
+              Danh sách danh mục
+            </h5>
           </div>
           
-          <div className="row g-3">
-            {categories.map((category) => {
+          <div className="row category-grid">
+            {currentPageCategories.map((category) => {
               const productCount = categoryProductCounts[category.id] || 0
               return (
-                <div key={category.id} className="col-md-4">
+                <div key={category.id} className="col-md-3">
                   <div 
                     className="card h-100 border-0 shadow-sm cursor-pointer"
                     onClick={() => navigate(`/products/category/${category.id}`)}
                     style={{ cursor: 'pointer' }}
                   >
                     <div className="card-body text-center">
-                      <i className="bi bi-folder-fill fs-1 text-primary mb-3 d-block"></i>
+                      <i className="bi bi-folder-fill text-primary mb-3 d-block"></i>
                       <h5 className="card-title">{category.name}</h5>
                       <p className="card-text text-muted">
                         {productCount} product{productCount !== 1 ? 's' : ''}
@@ -281,12 +349,47 @@ const ProductsManagement = () => {
               )
             })}
           </div>
+          
+          {/* Category Pagination */}
+          {totalCategoryPages > 1 && (
+            <div className="d-flex justify-content-center mt-4">
+              <div className="category-pagination">
+                {Array.from({ length: totalCategoryPages }, (_, index) => (
+                  <button
+                    key={index}
+                    className={`pagination-dot ${currentCategoryPage === index ? 'active' : ''}`}
+                    onClick={() => handleCategoryPageChange(index)}
+                    title={`Trang ${index + 1}`}
+                  >
+                    <span className="visually-hidden">Trang {index + 1}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Category pagination info - moved to bottom right */}
+          {categories.length > 0 && (
+            <div className="d-flex justify-content-end pagination-info">
+              <div className="text-muted">
+                <small>
+                  {totalCategoryPages > 1 ? (
+                    <>
+                      Trang {currentCategoryPage + 1} / {totalCategoryPages} 
+                      <span className="mx-1">•</span>
+                    </>
+                  ) : null}
+                  {categories.length} danh mục
+                </small>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Recent Products Table */}
+      {/* Products Table */}
       <div className="w-100">
-        {products.length === 0 ? (
+        {allProducts.length === 0 ? (
           <div className="text-center py-5">
             <i className="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
             <h4 className="text-muted">No products found</h4>
@@ -302,155 +405,255 @@ const ProductsManagement = () => {
           <>
             <div className="d-flex justify-content-between align-items-center mb-3 px-3">
               <h5 className="mb-0">
-                {isSearchMode ? 'Kết quả tìm kiếm' : 'Sản phẩm gần đây'}
+                {isSearchMode ? 'Kết quả tìm kiếm' : 'Danh sách sản phẩm'}
               </h5>
               <small className="text-muted">
                 {isSearchMode 
-                  ? `Hiển thị ${displayProducts.length} sản phẩm tìm thấy`
-                  : `Hiển thị ${displayProducts.length} trong số ${products.length} sản phẩm`
+                  ? `Hiển thị ${products.length} trong số ${allProducts.length} sản phẩm tìm thấy`
+                  : `Hiển thị ${products.length} trong số ${allProducts.length} sản phẩm`
                 }
               </small>
             </div>
-            <div className="table-responsive w-100">
-              <table className="table align-middle products-table w-100">
-                <thead className="table-primary">
-                  <tr>
-                    <th scope="col" className="text-center" style={{ width: '60px' }}>
-                      # STT
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '90px' }}>
-                      <i className="bi bi-image text-primary"></i> Ảnh
-                    </th>
-                    <th scope="col" style={{ minWidth: '200px' }}>
-                      <i className="bi bi-box-seam text-primary"></i> Tên sản phẩm
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '130px' }}>
-                      <i className="bi bi-currency-dollar text-primary"></i> Giá từ
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '100px' }}>
-                      <i className="bi bi-boxes text-primary"></i> Kho
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '150px' }}>
-                      <i className="bi bi-check-circle text-primary"></i>Trạng thái
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '130px' }}>
-                      <i className="bi bi-calendar-plus text-primary"></i> Ngày tạo
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '130px' }}>
-                      <i className="bi bi-arrow-clockwise text-primary"></i> Cập nhật
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '160px' }}>
-                      <i className="bi bi-gear text-primary"></i> Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayProducts.map((product, index) => (
-                    <tr key={product.id} className="product-row">
-                      <td className="text-center">
-                        <span className="fw-bold">{index + 1}</span>
-                      </td>
-                      <td className="text-center">
-                        <div className="product-image-container">
-                          <img
-                            src={getImageSrc(product)}
-                            alt={product.name}
-                            className="product-image-thumb"
-                            onError={(e) => handleImageError(product.id, e)}
-                          />
-                        </div>
-                      </td>
-                      <td>
-                        <div className="product-info">
-                          <h6 className="product-name mb-0">{product.name}</h6>
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <div className="price-container">
-                          <span className="price-value text-success fw-bold">
-                            {formatPrice(getLowestPrice(product.productVariants))}
-                          </span>
-                          {product.productVariants.length > 1 && (
-                            <small className="d-block text-muted mt-1">
-                              {product.productVariants.length} mức giá
-                            </small>
-                          )}
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <span className="badge bg-info-subtle text-info-emphasis px-3 py-2 rounded-pill">
-                          <i className="bi bi-boxes me-1"></i>
-                          {getTotalQuantity(product.productVariants)}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <span className={`badge status-badge ${product.enabled ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'} px-3 py-2 rounded-pill`}>
-                          <i className={`bi ${product.enabled ? 'bi-check-circle' : 'bi-x-circle'} me-1`}></i>
-                          {product.enabled ? 'Hoạt động' : 'Tạm dừng'}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <div className="date-container">
-                          <span className="date-value fw-medium">
-                            {new Date(product.createdAt).toLocaleDateString('vi-VN')}
-                          </span>
-                          <small className="d-block text-muted">
-                            {new Date(product.createdAt).toLocaleTimeString('vi-VN', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </small>
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <div className="date-container">
-                          <span className="date-value fw-medium">
-                            {new Date(product.updatedAt).toLocaleDateString('vi-VN')}
-                          </span>
-                          <small className="d-block text-muted">
-                            {new Date(product.updatedAt).toLocaleTimeString('vi-VN', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                            {product.updatedAt !== product.createdAt && (
-                              <i className="bi bi-arrow-clockwise text-warning ms-1" title="Đã cập nhật"></i>
-                            )}
-                          </small>
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <div className="action-buttons">
-                          <button 
-                            className="btn btn-outline-info btn-sm action-btn me-1"
-                            title="Xem chi tiết"
-                            onClick={() => {
-                              navigate(`/products/detail/${product.id}`)
-                            }}
-                          >
-                            <i className="bi bi-eye"></i>
-                          </button>
-                          <button 
-                            className="btn btn-outline-warning btn-sm action-btn me-1"
-                            title="Chỉnh sửa"
-                            onClick={() => {
-                              navigate(`/products/edit/${product.id}`)
-                            }}
-                          >
-                            <i className="bi bi-pencil"></i>
-                          </button>
-                          <button 
-                            className="btn btn-outline-danger btn-sm action-btn"
-                            title="Xóa"
-                            onClick={() => handleDeleteClick(product)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
+            
+            {/* Wrap table and pagination in product-table-wrapper */}
+            <div className="product-table-wrapper mx-3">
+              <div className="table-responsive">
+                <table className="table align-middle products-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="text-center" style={{ width: '60px' }}>
+                        STT
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '90px' }}>
+                        <i className="bi bi-image"></i> Ảnh
+                      </th>
+                      <th scope="col" style={{ minWidth: '200px' }}>
+                        <i className="bi bi-box-seam"></i> Tên sản phẩm
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '130px' }}>
+                        <i className="bi bi-currency-dollar"></i> Giá từ
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '100px' }}>
+                        <i className="bi bi-boxes"></i> Kho
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '150px' }}>
+                        <i className="bi bi-check-circle"></i> Trạng thái
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '130px' }}>
+                        <i className="bi bi-calendar-plus"></i> Ngày tạo
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '130px' }}>
+                        <i className="bi bi-arrow-clockwise"></i> Cập nhật
+                      </th>
+                      <th scope="col" className="text-center" style={{ width: '160px' }}>
+                        <i className="bi bi-gear"></i> Thao tác
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {products.map((product, index) => (
+                      <tr key={product.id} className="product-row">
+                        <td className="text-center">
+                          <span className="fw-bold">
+                            {paginationData.indexOfFirstProduct + index + 1}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <div className="product-image-container">
+                            <img
+                              src={getImageSrc(product)}
+                              alt={product.name}
+                              className="product-image-thumb"
+                              onError={(e) => handleImageError(product.id, e)}
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="product-info">
+                            <h6 className="product-name mb-0">{product.name}</h6>
+                          </div>
+                        </td>
+                        <td className="text-center">
+                          <div className="price-container">
+                            <span className="price-value text-success fw-bold">
+                              {formatPrice(getLowestPrice(product.productVariants))}
+                            </span>
+                            {product.productVariants.length > 1 && (
+                              <small className="d-block text-muted mt-1">
+                                {product.productVariants.length} mức giá
+                              </small>
+                            )}
+                          </div>
+                        </td>
+                        <td className="text-center">
+                          <span className="badge bg-info-subtle text-info-emphasis px-3 py-2 rounded-pill">
+                            <i className="bi bi-boxes me-1"></i>
+                            {getTotalQuantity(product.productVariants)}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <span className={`badge status-badge ${product.enabled ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'} px-3 py-2 rounded-pill`}>
+                            <i className={`bi ${product.enabled ? 'bi-check-circle' : 'bi-x-circle'} me-1`}></i>
+                            {product.enabled ? 'Hoạt động' : 'Tạm dừng'}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <div className="date-container">
+                            <span className="date-value fw-medium">
+                              {new Date(product.createdAt).toLocaleDateString('vi-VN')}
+                            </span>
+                            <small className="d-block text-muted">
+                              {new Date(product.createdAt).toLocaleTimeString('vi-VN', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </small>
+                          </div>
+                        </td>
+                        <td className="text-center">
+                          <div className="date-container">
+                            <span className="date-value fw-medium">
+                              {new Date(product.updatedAt).toLocaleDateString('vi-VN')}
+                            </span>
+                            <small className="d-block text-muted">
+                              {new Date(product.updatedAt).toLocaleTimeString('vi-VN', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                              {product.updatedAt !== product.createdAt && (
+                                <i className="bi bi-arrow-clockwise text-warning ms-1" title="Đã cập nhật"></i>
+                              )}
+                            </small>
+                          </div>
+                        </td>
+                        <td className="text-center">
+                          <div className="action-buttons">
+                            <button 
+                              className="btn btn-outline-info btn-sm action-btn me-1"
+                              title="Xem chi tiết"
+                              onClick={() => {
+                                navigate(`/products/detail/${product.id}`)
+                              }}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </button>
+                            <button 
+                              className="btn btn-outline-warning btn-sm action-btn me-1"
+                              title="Chỉnh sửa"
+                              onClick={() => {
+                                navigate(`/products/edit/${product.id}`)
+                              }}
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button 
+                              className="btn btn-outline-danger btn-sm action-btn"
+                              title="Xóa"
+                              onClick={() => handleDeleteClick(product)}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination */}
+              {paginationData.totalPages > 1 && (
+                <div className="pagination-container">
+                  <div className="pagination-status">
+                    <div className="text-muted">
+                      Hiển thị {paginationData.indexOfFirstProduct + 1} - {paginationData.indexOfLastProduct} của {paginationData.totalElements} sản phẩm
+                    </div>
+                    <div className="d-flex align-items-center gap-2">
+                      <label htmlFor="productsPerPage" className="form-label mb-0 text-muted small">
+                        Hiển thị:
+                      </label>
+                      <select
+                        id="productsPerPage"
+                        className="form-select form-select-sm"
+                        style={{ width: 'auto' }}
+                        value={productsPerPage}
+                        onChange={(e) => handleProductsPerPageChange(parseInt(e.target.value))}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                      </select>
+                      <span className="text-muted small">mục/trang</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pagination-controls">
+                    {/* Page Info */}
+                    <div className="pagination-info">
+                      Trang {currentPage} / {paginationData.totalPages}
+                    </div>
+                    
+                    {/* Navigation */}
+                    <nav aria-label="Product pagination">
+                      <ul className="pagination pagination-sm mb-0">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                          <button 
+                            className="page-link" 
+                            onClick={() => handlePageChange(1)}
+                            disabled={currentPage === 1}
+                            title="Trang đầu"
+                          >
+                            <i className="bi bi-chevron-double-left"></i>
+                          </button>
+                        </li>
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                          <button 
+                            className="page-link" 
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            title="Trang trước"
+                          >
+                            <i className="bi bi-chevron-left"></i>
+                          </button>
+                        </li>
+                        
+                        {getPaginationItems.map((page) => (
+                          <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                            <button 
+                              className="page-link" 
+                              onClick={() => handlePageChange(page)}
+                            >
+                              {page}
+                            </button>
+                          </li>
+                        ))}
+                        
+                        <li className={`page-item ${currentPage === paginationData.totalPages ? 'disabled' : ''}`}>
+                          <button 
+                            className="page-link" 
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === paginationData.totalPages}
+                            title="Trang sau"
+                          >
+                            <i className="bi bi-chevron-right"></i>
+                          </button>
+                        </li>
+                        <li className={`page-item ${currentPage === paginationData.totalPages ? 'disabled' : ''}`}>
+                          <button 
+                            className="page-link" 
+                            onClick={() => handlePageChange(paginationData.totalPages)}
+                            disabled={currentPage === paginationData.totalPages}
+                            title="Trang cuối"
+                          >
+                            <i className="bi bi-chevron-double-right"></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
