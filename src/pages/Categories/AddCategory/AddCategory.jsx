@@ -184,10 +184,9 @@ const AddCategory = () => {
                     onChange={handleInputChange}
                     placeholder="VD: Thời trang nam, Đồ điện tử..."
                     maxLength={100}
-                    required
                   />
                 </div>
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                {errors.name && <div className="invalid-feedback d-block">{errors.name}</div>}
                 <div className="form-text">Tên danh mục cần rõ ràng, dễ hiểu.</div>
               </div>
 
@@ -204,10 +203,10 @@ const AddCategory = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Mô tả chi tiết về danh mục này..."
-                  required
+
                 />
                 {errors.description && (
-                  <div className="invalid-feedback">{errors.description}</div>
+                  <div className="invalid-feedback d-block">{errors.description}</div>
                 )}
               </div>
 

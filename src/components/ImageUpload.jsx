@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import fileUploadService from '@/services/fileUploadService'
 
-const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
+const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '', error = null, required = false }) => {
   const [uploadMode, setUploadMode] = useState('url') // 'url' hoặc 'file'
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(value || '')
@@ -76,7 +76,10 @@ const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
 
   return (
     <div className="image-upload-container">
-      <label className="form-label">{label}</label>
+      <label className="form-label">
+        {label}
+        {required && <span className="text-danger"> *</span>}
+      </label>
       
       {/* Mode Selection */}
       <div className="mb-3">
@@ -117,7 +120,7 @@ const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
         <div className="mb-3">
           <input
             type="url"
-            className="form-control"
+            className={`form-control ${error ? 'is-invalid' : ''}`}
             value={urlInput}
             onChange={handleUrlChange}
             placeholder="https://example.com/image.jpg"
@@ -131,7 +134,7 @@ const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
           <input
             ref={fileInputRef}
             type="file"
-            className="form-control"
+            className={`form-control ${error ? 'is-invalid' : ''}`}
             accept="image/*"
             onChange={handleFileSelect}
             disabled={uploading}
@@ -142,6 +145,13 @@ const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
               <small className="text-muted">Đang upload...</small>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="invalid-feedback d-block">
+          {error}
         </div>
       )}
 
@@ -168,8 +178,19 @@ const ImageUpload = ({ value, onChange, label = "Hình ảnh", id = '' }) => {
             </div>
             <button
               type="button"
-              className="btn btn-sm btn-danger position-absolute"
-              style={{ top: '5px', right: '5px' }}
+              className="btn btn-danger position-absolute"
+              style={{ 
+                top: '5px', 
+                right: '5px',
+                width: '24px',
+                height: '24px',
+                padding: '0',
+                fontSize: '12px',
+                lineHeight: '1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
               onClick={handleRemoveImage}
               title="Xóa ảnh"
             >
