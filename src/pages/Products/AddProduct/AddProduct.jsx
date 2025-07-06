@@ -8,6 +8,7 @@ import sizeService from '@/services/sizeService'
 import ImageUpload from '@/components/ImageUpload'
 import ColorManagementModal from '@/components/ColorManagementModal'
 import SizeManagementModal from '@/components/SizeManagementModal'
+import Toast from '@/components/Toast'
 // Đảm bảo bạn đã import file CSS mới
 import './AddProduct.css'
 
@@ -30,6 +31,14 @@ const AddProduct = () => {
   const [errors, setErrors] = useState({})
   const [showColorModal, setShowColorModal] = useState(false)
   const [showSizeModal, setShowSizeModal] = useState(false)
+  
+  // Toast states
+  const [toast, setToast] = useState({
+    show: false,
+    type: 'success',
+    title: '',
+    message: ''
+  })
 
   // Load initial data
   useEffect(() => {
@@ -78,6 +87,23 @@ const AddProduct = () => {
     } catch (error) {
       // Error refreshing sizes
     }
+  }
+
+  // Toast functions
+  const showToast = (type, title, message = '') => {
+    setToast({
+      show: true,
+      type,
+      title,
+      message
+    })
+  }
+
+  const hideToast = () => {
+    setToast(prev => ({
+      ...prev,
+      show: false
+    }))
   }
 
   const handleInputChange = (e) => {
@@ -215,7 +241,13 @@ const AddProduct = () => {
       const result = await productService.createProduct(submitData)
       
       if (result.success) {
-        navigate('/products')
+        // Show success toast
+        showToast('success', 'Thành công', `Đã thêm sản phẩm "${formData.name}" thành công`)
+        
+        // Delay redirect to show toast
+        setTimeout(() => {
+          navigate(`/products/category/${formData.categoryId}`)
+        }, 1500)
       } else {
         setErrors({ general: result.message || 'Có lỗi xảy ra khi tạo sản phẩm' })
       }
@@ -582,6 +614,15 @@ const AddProduct = () => {
         show={showSizeModal}
         onHide={() => setShowSizeModal(false)}
         onSizeAdded={handleSizeUpdated}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        show={toast.show}
+        onHide={hideToast}
+        type={toast.type}
+        title={toast.title}
+        message={toast.message}
       />
     </div>
   )
