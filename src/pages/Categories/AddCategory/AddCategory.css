@@ -1,0 +1,276 @@
+/* === MODERN ADD CATEGORY FORM STYLES === */
+
+/* --- 1. VARIABLES & GLOBAL STYLES --- */
+:root {
+    /* Colors */
+    --primary-color: #4f46e5; /* Indigo 600 */
+    --primary-hover: #4338ca; /* Indigo 700 */
+    --secondary-color: #6b7280; /* Gray 500 */
+    --secondary-hover: #4b5563; /* Gray 600 */
+    --danger-color: #ef4444; /* Red 500 */
+    --success-color: #22c55e; /* Green 500 */
+    --bg-color: #f9fafb; /* Gray 50 */
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb; /* Gray 200 */
+    --input-bg: #ffffff;
+    --text-dark: #111827; /* Gray 900 */
+    --text-medium: #374151; /* Gray 700 */
+    --text-light: #6b7280; /* Gray 500 */
+  
+    /* Typography */
+    --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    /* Sizing & Spacing */
+    --border-radius: 0.5rem; /* 8px */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  /* Base page styling */
+  .add-category-page {
+    font-family: var(--font-family-sans);
+    background-color: var(--bg-color);
+    color: var(--text-medium);
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  
+  /* --- 2. PAGE HEADER --- */
+  .add-category-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .add-category-page .page-title {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.2;
+    margin: 0;
+  }
+  
+  .add-category-page .breadcrumb {
+    margin-bottom: 0.5rem;
+    padding: 0;
+    background-color: transparent;
+  }
+  .add-category-page .breadcrumb-item,
+  .add-category-page .breadcrumb-item button {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  .add-category-page .breadcrumb-item.active {
+    color: var(--text-medium);
+    font-weight: 500;
+  }
+  .add-category-page .breadcrumb-item + .breadcrumb-item::before {
+    content: '/';
+    padding: 0 0.5rem;
+    color: var(--border-color);
+  }
+  .add-category-page .breadcrumb-item button {
+    transition: color 0.2s ease-in-out;
+  }
+  .add-category-page .breadcrumb-item button:hover {
+    color: var(--primary-color);
+  }
+  
+  /* --- 3. FORM CONTAINER & CARD --- */
+  .add-category-page .form-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .add-category-page .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .add-category-page .card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .add-category-page .card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .add-category-page .card-header .card-title {
+    margin: 0;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-category-page .card-body {
+    padding: 2.5rem 3rem;
+  }
+  
+  /* --- 4. FORM ELEMENTS --- */
+  .add-category-page .form-label {
+    font-weight: 600;
+    color: var(--text-medium);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .add-category-page .form-control,
+  .add-category-page .input-group-text {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--border-radius);
+  }
+  
+  .add-category-page .input-group .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .add-category-page .input-group .input-group-text {
+    border-right: 0;
+    background-color: #f9fafb;
+    color: var(--text-light);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .add-category-page .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgb(79 70 229 / 0.1);
+    outline: none;
+  }
+  
+  .add-category-page .form-control::placeholder {
+    color: #9ca3af; /* Gray 400 */
+  }
+  
+  /* Validation states */
+  .add-category-page .form-control.is-invalid {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+  }
+  .add-category-page .form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+  }
+  .add-category-page .invalid-feedback {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .add-category-page .form-text {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+  }
+  
+  .add-category-page textarea.form-control {
+    min-height: 120px;
+    line-height: 1.6;
+  }
+  
+  /* --- 5. ACTION BUTTONS --- */
+  .add-category-page .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .add-category-page .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .add-category-page .btn:focus {
+    box-shadow: 0 0 0 3px rgb(79 70 229 / 0.2);
+  }
+  
+  /* Primary Button */
+  .add-category-page .btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+  .add-category-page .btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .add-category-page .btn-primary:disabled {
+    background-color: #a5b4fc; /* Indigo 300 */
+    cursor: not-allowed;
+  }
+  
+  /* Secondary Button */
+  .add-category-page .btn-secondary {
+    background-color: #fff;
+    color: var(--text-medium);
+    border-color: var(--border-color);
+  }
+  .add-category-page .btn-secondary:hover:not(:disabled) {
+    background-color: var(--bg-color);
+    border-color: #d1d5db; /* Gray 300 */
+    color: var(--text-dark);
+  }
+  
+  /* Outline Secondary (Back button) */
+  .add-category-page .btn-outline-secondary {
+    color: var(--secondary-color);
+    border-color: var(--border-color);
+    background-color: #fff;
+  }
+  .add-category-page .btn-outline-secondary:hover:not(:disabled) {
+    background-color: var(--bg-color);
+    color: var(--secondary-hover);
+  }
+  
+  /* --- 6. RESPONSIVE DESIGN --- */
+  @media (max-width: 768px) {
+    .add-category-page {
+      padding: 1.5rem;
+    }
+    .add-category-page .page-header {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .add-category-page .page-title {
+      font-size: 1.875rem;
+    }
+    .add-category-page .card-body {
+      padding: 1.5rem;
+    }
+    .add-category-page .form-actions {
+      flex-direction: column-reverse; /* Put primary button on top on mobile */
+      gap: 0.75rem;
+    }
+    .add-category-page .btn {
+      width: 100%;
+    }
+  }

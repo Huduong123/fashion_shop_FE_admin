@@ -10,6 +10,9 @@ import ProductsByCategory from './pages/Products/ProductsByCategory'
 import AddProduct from './pages/Products/AddProduct/AddProduct'
 import EditProduct from './pages/Products/EditProduct/EditProduct'
 import ProductDetail from './pages/Products/ProductDetail/ProductDetail'
+import CategoryManagement from './pages/Categories/CategoryManagement'
+import AddCategory from './pages/Categories/AddCategory/AddCategory'
+import EditCategory from './pages/Categories/EditCategory/EditCategory'
 import authService from '@/services/authService'
 import './App.css'
 
@@ -71,7 +74,9 @@ function App() {
           <Route path="products/edit/:productId" element={<EditProduct />} />
           <Route path="products/detail/:id" element={<ProductDetail />} />
           <Route path="products/category/:categoryId" element={<ProductsByCategory />} />
-          <Route path="category" element={<div>Category Page (Coming Soon)</div>} />
+          <Route path="category" element={<CategoryManagement />} />
+          <Route path="categories/add" element={<AddCategory />} />
+          <Route path="categories/edit/:id" element={<EditCategory />} />
           <Route path="inventory" element={<div>Inventory Page (Coming Soon)</div>} />
           <Route path="orders" element={<div>Orders Page (Coming Soon)</div>} />
           <Route path="purchases" element={<div>Purchases Page (Coming Soon)</div>} />

@@ -618,7 +618,8 @@ const ProductsByCategory = () => {
         show={showDeleteModal}
         onHide={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        productName={productToDelete?.name || ''}
+        itemName={productToDelete?.name || ''}
+        type="product"
         loading={deleting}
       />
 
