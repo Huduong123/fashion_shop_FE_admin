@@ -10,7 +10,7 @@ const colorService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error fetching colors:', error)
+      // Error fetching colors
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to fetch colors'
@@ -27,7 +27,7 @@ const colorService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error fetching color:', error)
+      // Error fetching color
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to fetch color'
@@ -44,7 +44,7 @@ const colorService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error creating color:', error)
+      // Error creating color
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to create color'
@@ -61,7 +61,7 @@ const colorService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error updating color:', error)
+      // Error updating color
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to update color'
@@ -77,7 +77,7 @@ const colorService = {
         success: true
       }
     } catch (error) {
-      console.error('Error deleting color:', error)
+      // Error deleting color
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to delete color'

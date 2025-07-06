@@ -10,7 +10,7 @@ const sizeService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error fetching sizes:', error)
+      // Error fetching sizes
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to fetch sizes'
@@ -27,7 +27,7 @@ const sizeService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error fetching size:', error)
+      // Error fetching size
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to fetch size'
@@ -44,7 +44,7 @@ const sizeService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error creating size:', error)
+      // Error creating size
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to create size'
@@ -61,7 +61,7 @@ const sizeService = {
         data: response.data
       }
     } catch (error) {
-      console.error('Error updating size:', error)
+      // Error updating size
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to update size'
@@ -77,7 +77,7 @@ const sizeService = {
         success: true
       }
     } catch (error) {
-      console.error('Error deleting size:', error)
+      // Error deleting size
       return {
         success: false,
         message: error.response?.data?.message || 'Failed to delete size'

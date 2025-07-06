@@ -272,7 +272,7 @@ const EditCategory = () => {
                     required
                   />
                 </div>
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                {errors.name && <div className="invalid-feedback d-block">{errors.name}</div>}
                 <div className="form-text">Tên danh mục cần rõ ràng, dễ hiểu.</div>
               </div>
 
@@ -292,7 +292,7 @@ const EditCategory = () => {
                   required
                 />
                 {errors.description && (
-                  <div className="invalid-feedback">{errors.description}</div>
+                  <div className="invalid-feedback d-block">{errors.description}</div>
                 )}
               </div>
 
