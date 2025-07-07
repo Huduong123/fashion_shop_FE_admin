@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import authService from '@/services/authService'
+import { decodeJWT } from '@/utils/auth'
 import './AdminLayout.css'
 
 const AdminLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [hasSystemRole, setHasSystemRole] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -14,6 +16,24 @@ const AdminLayout = () => {
     // Get current user info
     const userInfo = authService.getCurrentUser()
     setCurrentUser(userInfo)
+    // Check SYSTEM role from JWT
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      const decoded = decodeJWT(token)
+      // Roles may be in decoded.authorities or decoded.roles or decoded.role
+      // Accept both array or string
+      let roles = []
+      if (decoded) {
+        if (Array.isArray(decoded.authorities)) roles = decoded.authorities
+        else if (Array.isArray(decoded.roles)) roles = decoded.roles
+        else if (typeof decoded.authorities === 'string') roles = [decoded.authorities]
+        else if (typeof decoded.roles === 'string') roles = [decoded.roles]
+        else if (decoded.role) roles = [decoded.role]
+      }
+      setHasSystemRole(roles.some(r => r === 'ROLE_SYSTEM' || r === 'SYSTEM'))
+    } else {
+      setHasSystemRole(false)
+    }
   }, [])
 
   const handleLogout = () => {
@@ -39,7 +59,7 @@ const AdminLayout = () => {
     {
       title: 'USERS',
       items: [
-        { name: 'Profile', icon: 'bi-person', path: '/profile' },
+        ...(hasSystemRole ? [{ name: 'Account', icon: 'bi-person', path: '/account' }] : []),
         { name: 'Roles', icon: 'bi-people', path: '/roles' },
         { name: 'Permissions', icon: 'bi-shield-lock', path: '/permissions' },
         { name: 'Customers', icon: 'bi-person-badge', path: '/customers' },
