@@ -1,0 +1,436 @@
+/* AccountDetail.css - Redesigned */
+
+/* --- General Container --- */
+.account-detail-container {
+  /* Inherits padding from the main layout, no extra padding needed here */
+}
+
+/* --- Main Wrapper for all content --- */
+.account-detail-wrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* --- Integrated Header --- */
+.account-detail-header-integrated {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa, #fff);
+}
+
+.account-detail-header-integrated h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.account-detail-header-integrated .breadcrumb {
+  margin: 0;
+  padding: 0;
+  background: none;
+  font-size: 0.9rem;
+}
+
+.account-detail-header-integrated .breadcrumb a {
+  color: #667eea;
+  text-decoration: none;
+}
+.account-detail-header-integrated .breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.account-detail-header-integrated .breadcrumb-item.active {
+  color: #718096;
+}
+
+/* --- Main Content Layout --- */
+.account-detail-body {
+  padding: 2rem;
+}
+
+.account-detail-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* --- Profile Summary Card (Left Column) --- */
+.profile-summary-card {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e9ecef;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.25);
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.profile-username {
+  color: #718096;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-status {
+  margin-bottom: 1.5rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+  background: #e6f7ec;
+  color: #1a9347;
+}
+
+.status-badge.inactive {
+  background: #fff1f0;
+  color: #d9363e;
+}
+
+/* --- Action Buttons in Profile Summary --- */
+.detail-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: auto; /* Pushes buttons to the bottom */
+}
+
+.detail-action-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.detail-action-btn.primary {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+.detail-action-btn.primary:hover {
+  background: #5a67d8;
+  border-color: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.detail-action-btn.secondary {
+  background: #fff;
+  color: #4a5568;
+  border-color: #cbd5e0;
+}
+.detail-action-btn.secondary:hover {
+  background: #f7fafc;
+  border-color: #a0aec0;
+}
+
+.detail-action-btn.danger {
+  background: #fed7d7;
+  color: #c53030;
+  border: none;
+}
+.detail-action-btn.danger:hover {
+  background: #feb2b2;
+  color: #9b2c2c;
+}
+
+/* --- Section Card (General) --- */
+.info-card {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.info-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+
+.info-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.info-card-body {
+  padding: 1.5rem;
+}
+
+/* --- Personal Info Grid (Right Column) --- */
+.personal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #718096;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #2d3748;
+  background: #f7fafc;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  min-height: 40px;
+}
+
+.info-value.empty {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+/* --- Roles Section --- */
+.add-role-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.add-role-btn:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* --- REDESIGNED ROLE CARD --- */
+.role-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-left: 4px solid #667eea;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #667eea;
+}
+
+.role-icon-wrapper {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0e4fc 0%, #d5c8f1 100%);
+  color: #667eea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.role-info {
+  text-align: left;
+  flex-grow: 1;
+}
+
+.role-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.25rem 0;
+}
+
+.role-description {
+  font-size: 0.85rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.remove-role-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: #718096;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  opacity: 0; /* Hidden by default */
+}
+
+.role-card:hover .remove-role-btn {
+  opacity: 1; /* Show on hover */
+}
+
+.remove-role-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+.remove-role-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty-roles {
+  text-align: center;
+  padding: 3rem;
+  color: #a0aec0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #e2e8f0;
+}
+.empty-roles i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Modal styles remain the same, they are good. I will add one overlay style */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  backdrop-filter: blur(5px);
+}
+.delete-confirmation-modal {
+  /* Existing styles are fine */
+}
+
+
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
+  .account-detail-grid {
+    grid-template-columns: 250px 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .account-detail-grid {
+    grid-template-columns: 1fr; /* Stack columns */
+  }
+  .profile-summary-card {
+    margin-bottom: 0; /* No margin when stacked */
+  }
+}
+
+@media (max-width: 576px) {
+  .account-detail-header-integrated {
+    padding: 1rem 1.25rem;
+  }
+  .account-detail-header-integrated h1 {
+    font-size: 1.5rem;
+  }
+  .account-detail-body {
+    padding: 1rem;
+  }
+  .personal-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .add-role-btn {
+    align-self: stretch;
+    justify-content: center;
+  }
+}

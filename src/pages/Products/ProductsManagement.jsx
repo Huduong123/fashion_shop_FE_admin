@@ -417,8 +417,8 @@ const ProductsManagement = () => {
             
             {/* Wrap table and pagination in product-table-wrapper */}
             <div className="product-table-wrapper mx-3">
-              <div className="table-responsive">
-                <table className="table align-middle products-table">
+              <div className="table-responsive w-100">
+                <table className="table align-middle products-table w-100">
                   <thead>
                     <tr>
                       <th scope="col" className="text-center" style={{ width: '60px' }}>

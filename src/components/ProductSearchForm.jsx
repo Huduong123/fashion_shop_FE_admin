@@ -98,7 +98,7 @@ const ProductSearchForm = ({ onSearch, loading = false, initialFilters = {}, hid
           {/* Các trường tìm kiếm */}
           <div className="row g-2">
             {/* --- BỘ LỌC CƠ BẢN --- */}
-            <div className={hideCategoryFilter ? "col-md-6" : "col-md-5"}>
+            <div className={hideCategoryFilter ? "col-md-6" : "col-md-4"}>
               <label htmlFor="searchName" className="form-label small fw-bold mb-1">
                 Tên sản phẩm
               </label>
@@ -133,7 +133,7 @@ const ProductSearchForm = ({ onSearch, loading = false, initialFilters = {}, hid
               </div>
             )}
 
-            <div className={hideCategoryFilter ? "col-md-6" : "col-md-3"}>
+            <div className={hideCategoryFilter ? "col-md-6" : "col-md-4"}>
               <label htmlFor="searchStatus" className="form-label small fw-bold mb-1">
                 Trạng thái
               </label>

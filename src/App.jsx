@@ -13,7 +13,13 @@ import ProductDetail from './pages/Products/ProductDetail/ProductDetail'
 import CategoryManagement from './pages/Categories/CategoryManagement'
 import AddCategory from './pages/Categories/AddCategory/AddCategory'
 import EditCategory from './pages/Categories/EditCategory/EditCategory'
+import AccountsManagement from './pages/Account/AccountsManagement'
+import AddAccount from './pages/Account/AddAccount/AddAccount'
+import EditAccount from './pages/Account/EditAccount/EditAccount'
+import AccountDetail from './pages/Account/AccountDetail/AccountDetail'
 import authService from '@/services/authService'
+import AccessDenied from './pages/AccessDenied'
+import NotFound from './pages/NotFound/NotFound'
 import './App.css'
 
 // Public Route Component (redirect to dashboard if logged in)
@@ -77,6 +83,10 @@ function App() {
           <Route path="category" element={<CategoryManagement />} />
           <Route path="categories/add" element={<AddCategory />} />
           <Route path="categories/edit/:id" element={<EditCategory />} />
+          <Route path="account" element={<AccountsManagement />} />
+          <Route path="account/add" element={<AddAccount />} />
+          <Route path="account/edit/:id" element={<EditAccount />} />
+          <Route path="account/detail/:id" element={<AccountDetail />} />
           <Route path="inventory" element={<div>Inventory Page (Coming Soon)</div>} />
           <Route path="orders" element={<div>Orders Page (Coming Soon)</div>} />
           <Route path="purchases" element={<div>Purchases Page (Coming Soon)</div>} />
@@ -93,8 +103,11 @@ function App() {
           <Route path="image-demo" element={<ImageDemo />} />
         </Route>
 
+        {/* Access Denied Route */}
+        <Route path="/access-denied" element={<AccessDenied />} />
+
         {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   )
