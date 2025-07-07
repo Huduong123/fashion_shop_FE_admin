@@ -9,6 +9,7 @@ import ImageUpload from '@/components/ImageUpload'
 import ColorManagementModal from '@/components/ColorManagementModal'
 import SizeManagementModal from '@/components/SizeManagementModal'
 import Toast from '@/components/Toast'
+import { PRODUCT_VARIANT_STATUS, PRODUCT_VARIANT_STATUS_OPTIONS } from '@/utils/constants'
 // Đảm bảo bạn đã import file CSS mới
 import './AddProduct.css'
 
@@ -132,7 +133,8 @@ const AddProduct = () => {
           sizeId: '',
           price: '',
           quantity: '',
-          imageUrl: ''
+          imageUrl: '',
+          status: PRODUCT_VARIANT_STATUS.ACTIVE
         }
       ]
     }))
@@ -234,7 +236,8 @@ const AddProduct = () => {
           sizeId: variant.sizeId ? parseInt(variant.sizeId) : null,
           price: parseFloat(variant.price),
           quantity: parseInt(variant.quantity),
-          imageUrl: variant.imageUrl || null
+          imageUrl: variant.imageUrl || null,
+          status: variant.status || PRODUCT_VARIANT_STATUS.ACTIVE
         }))
       }
 
@@ -545,6 +548,22 @@ const AddProduct = () => {
                                     {errors[`variant_${index}_quantity`]}
                                   </div>
                                 )}
+                              </div>
+                              <div className="col-6">
+                                <label className="form-label">
+                                  Trạng thái <span className="text-danger">*</span>
+                                </label>
+                                <select
+                                  className="form-select"
+                                  value={variant.status || PRODUCT_VARIANT_STATUS.ACTIVE}
+                                  onChange={(e) => handleVariantChange(index, 'status', e.target.value)}
+                                >
+                                  {PRODUCT_VARIANT_STATUS_OPTIONS.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                      {option.label}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
                               <div className="col-12">
                                 <ImageUpload

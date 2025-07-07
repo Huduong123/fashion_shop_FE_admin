@@ -123,6 +123,8 @@ const ProductsManagement = () => {
     return variants.reduce((total, variant) => total + variant.quantity, 0)
   }, [])
 
+
+
   const handleImageError = useCallback((productId, e) => {
     if (!imageErrors.has(productId)) {
       setImageErrors(prev => new Set([...prev, productId]))
@@ -546,13 +548,23 @@ const ProductsManagement = () => {
                             >
                               <i className="bi bi-pencil"></i>
                             </button>
-                            <button 
-                              className="btn btn-outline-danger btn-sm action-btn"
-                              title="Xóa"
-                              onClick={() => handleDeleteClick(product)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
+                            {product.canDelete ? (
+                              <button 
+                                className="btn btn-outline-danger btn-sm action-btn"
+                                title="Xóa"
+                                onClick={() => handleDeleteClick(product)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            ) : (
+                              <button 
+                                className="btn btn-outline-secondary btn-sm action-btn"
+                                title="Không thể xóa - Sản phẩm đã có đơn hàng hoặc đánh giá"
+                                disabled
+                              >
+                                <i className="bi bi-lock"></i>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import productService from '@/services/productService'
 import Toast from '@/components/Toast'
+import { PRODUCT_VARIANT_STATUS_LABELS, PRODUCT_VARIANT_STATUS_COLORS } from '@/utils/constants'
 import './ProductDetail.css'
 
 const ProductDetail = () => {
@@ -310,6 +311,14 @@ const ProductDetail = () => {
                         <span className={`detail-value quantity ${variant.quantity === 0 ? 'out-of-stock' : ''}`}>
                           {variant.quantity}
                           {variant.quantity === 0 && <span className="stock-status"> (Hết hàng)</span>}
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Trạng thái:</span>
+                        <span className="detail-value">
+                          <span className={`badge bg-${PRODUCT_VARIANT_STATUS_COLORS[variant.status || 'ACTIVE']}-subtle text-${PRODUCT_VARIANT_STATUS_COLORS[variant.status || 'ACTIVE']}-emphasis`}>
+                            {PRODUCT_VARIANT_STATUS_LABELS[variant.status || 'ACTIVE']}
+                          </span>
                         </span>
                       </div>
                     </div>

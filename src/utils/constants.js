@@ -1,0 +1,26 @@
+// Product Variant Status Constants
+export const PRODUCT_VARIANT_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE', 
+  DISCONTINUED: 'DISCONTINUED',
+  OUT_OF_STOCK: 'OUT_OF_STOCK'
+};
+
+export const PRODUCT_VARIANT_STATUS_LABELS = {
+  [PRODUCT_VARIANT_STATUS.ACTIVE]: 'Hoạt động',
+  [PRODUCT_VARIANT_STATUS.INACTIVE]: 'Không hoạt động',
+  [PRODUCT_VARIANT_STATUS.DISCONTINUED]: 'Ngưng sản xuất',
+  [PRODUCT_VARIANT_STATUS.OUT_OF_STOCK]: 'Hết hàng'
+};
+
+export const PRODUCT_VARIANT_STATUS_COLORS = {
+  [PRODUCT_VARIANT_STATUS.ACTIVE]: 'success',
+  [PRODUCT_VARIANT_STATUS.INACTIVE]: 'warning',
+  [PRODUCT_VARIANT_STATUS.DISCONTINUED]: 'danger',
+  [PRODUCT_VARIANT_STATUS.OUT_OF_STOCK]: 'secondary'
+};
+
+export const PRODUCT_VARIANT_STATUS_OPTIONS = Object.entries(PRODUCT_VARIANT_STATUS_LABELS).map(([value, label]) => ({
+  value,
+  label
+})); 

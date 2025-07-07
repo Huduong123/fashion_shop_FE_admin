@@ -17,6 +17,8 @@ import AccountsManagement from './pages/Account/AccountsManagement'
 import AddAccount from './pages/Account/AddAccount/AddAccount'
 import EditAccount from './pages/Account/EditAccount/EditAccount'
 import AccountDetail from './pages/Account/AccountDetail/AccountDetail'
+import OrderManagement from './pages/Order/OrderManagement'
+import OrderDetail from './pages/Order/OrderDetail/OrderDetail'
 import authService from '@/services/authService'
 import AccessDenied from './pages/AccessDenied'
 import NotFound from './pages/NotFound/NotFound'
@@ -88,7 +90,8 @@ function App() {
           <Route path="account/edit/:id" element={<EditAccount />} />
           <Route path="account/detail/:id" element={<AccountDetail />} />
           <Route path="inventory" element={<div>Inventory Page (Coming Soon)</div>} />
-          <Route path="orders" element={<div>Orders Page (Coming Soon)</div>} />
+          <Route path="orders" element={<OrderManagement />} />
+          <Route path="orders/:id" element={<OrderDetail />} />
           <Route path="purchases" element={<div>Purchases Page (Coming Soon)</div>} />
           <Route path="attributes" element={<div>Attributes Page (Coming Soon)</div>} />
           <Route path="invoices" element={<div>Invoices Page (Coming Soon)</div>} />
