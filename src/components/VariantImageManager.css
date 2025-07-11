@@ -1,0 +1,188 @@
+.variant-image-manager {
+  width: 100%;
+}
+
+.image-item {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: move;
+  position: relative;
+}
+
+.image-item:hover {
+  border-color: #dee2e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-item.primary {
+  border-color: #ffc107;
+  background-color: #fff3cd;
+}
+
+.image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.image-container img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-item:hover .image-container img {
+  transform: scale(1.05);
+}
+
+.primary-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: linear-gradient(45deg, #ffc107, #ff8c00);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.image-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.image-item:hover .image-controls {
+  opacity: 1;
+}
+
+.image-controls .btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.image-controls .btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.image-controls .btn-outline-warning:hover {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: white;
+}
+
+.image-controls .btn-outline-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+/* Drag and drop styles */
+.image-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+.image-item.drag-over {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+}
+
+/* Animation for image loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.image-item {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .image-container img {
+    height: 120px;
+  }
+  
+  .image-controls {
+    opacity: 1; /* Always show on mobile */
+  }
+  
+  .image-controls .btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Upload section styles */
+.variant-image-manager .card {
+  border: 1px solid #dee2e6;
+  box-shadow: none;
+}
+
+.variant-image-manager .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+/* Form controls */
+.variant-image-manager .form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.variant-image-manager .input-group .btn {
+  border-color: #ced4da;
+}
+
+.variant-image-manager .input-group .btn:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+/* Loading state */
+.variant-image-manager .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Empty state */
+.variant-image-manager .bg-light {
+  background-color: #f8f9fa !important;
+  border: 2px dashed #dee2e6 !important;
+}
+
+.variant-image-manager .bg-light:hover {
+  border-color: #007bff !important;
+  background-color: #e3f2fd !important;
+} 

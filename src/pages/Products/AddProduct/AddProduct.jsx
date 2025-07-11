@@ -6,6 +6,7 @@ import categoryService from '@/services/categoryService'
 import colorService from '@/services/colorService'
 import sizeService from '@/services/sizeService'
 import ImageUpload from '@/components/ImageUpload'
+import VariantImageManager from '@/components/VariantImageManager'
 import ColorManagementModal from '@/components/ColorManagementModal'
 import SizeManagementModal from '@/components/SizeManagementModal'
 import Toast from '@/components/Toast'
@@ -133,7 +134,8 @@ const AddProduct = () => {
           sizeId: '',
           price: '',
           quantity: '',
-          imageUrl: '',
+          imageUrl: '', // Keep for backward compatibility
+          images: [], // New field for multiple images
           status: PRODUCT_VARIANT_STATUS.ACTIVE
         }
       ]
@@ -152,7 +154,7 @@ const AddProduct = () => {
       delete newErrors[`variant_${index}_colorId`]
       delete newErrors[`variant_${index}_price`]
       delete newErrors[`variant_${index}_quantity`]
-      delete newErrors[`variant_${index}_imageUrl`]
+      delete newErrors[`variant_${index}_images`]
       return newErrors
     })
   }
@@ -209,8 +211,8 @@ const AddProduct = () => {
       } else if (parseInt(variant.quantity) < 0) {
         newErrors[`variant_${i}_quantity`] = 'Số lượng không thể âm'
       }
-      if (!variant.imageUrl || variant.imageUrl.trim().length === 0) {
-        newErrors[`variant_${i}_imageUrl`] = 'Vui lòng thêm hình ảnh cho biến thể'
+      if (!variant.images || variant.images.length === 0) {
+        newErrors[`variant_${i}_images`] = 'Vui lòng thêm ít nhất một ảnh cho biến thể'
       }
     }
 
@@ -236,7 +238,8 @@ const AddProduct = () => {
           sizeId: variant.sizeId ? parseInt(variant.sizeId) : null,
           price: parseFloat(variant.price),
           quantity: parseInt(variant.quantity),
-          imageUrl: variant.imageUrl || null,
+          imageUrl: variant.imageUrl || null, // Keep for backward compatibility
+          images: variant.images || [], // New multiple images field
           status: variant.status || PRODUCT_VARIANT_STATUS.ACTIVE
         }))
       }
@@ -271,7 +274,7 @@ const AddProduct = () => {
               <li className="breadcrumb-item">
                 <button 
                   className="btn btn-link p-0 text-decoration-none"
-                  onClick={() => navigate('/products')}
+                  onClick={() => navigate(-1)}
                 >
                   Products
                 </button>
@@ -290,7 +293,7 @@ const AddProduct = () => {
           <button 
             type="button" 
             className="btn btn-outline-secondary me-2"
-            onClick={() => navigate('/products')}
+            onClick={() => navigate(-1)}
           >
             <i className="bi bi-arrow-left me-2"></i>
             Quay lại
@@ -566,12 +569,11 @@ const AddProduct = () => {
                                 </select>
                               </div>
                               <div className="col-12">
-                                <ImageUpload
-                                  label="Hình ảnh biến thể"
-                                  value={variant.imageUrl}
-                                  onChange={(url) => handleVariantChange(index, 'imageUrl', url)}
-                                  id={`variant-${index}`}
-                                  error={errors[`variant_${index}_imageUrl`]}
+                                <VariantImageManager
+                                  label={`Ảnh biến thể ${index + 1}`}
+                                  images={variant.images || []}
+                                  onChange={(images) => handleVariantChange(index, 'images', images)}
+                                  maxImages={5}
                                   required={true}
                                 />
                               </div>
@@ -592,7 +594,7 @@ const AddProduct = () => {
                   <button 
                     type="button" 
                     className="btn btn-outline-secondary"
-                    onClick={() => navigate('/products')}
+                    onClick={() => navigate(-1)}
                   >
                     <i className="bi bi-x me-2"></i>
                     Hủy

@@ -177,7 +177,24 @@ const ProductsByCategory = () => {
     if (imageErrors.has(product.id)) {
       return 'https://via.placeholder.com/60x60?text=No+Image'
     }
-    return product.productVariants[0]?.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image'
+    
+    const firstVariant = product.productVariants[0]
+    if (!firstVariant) {
+      return 'https://via.placeholder.com/60x60?text=No+Image'
+    }
+    
+    // Try to get primary image from images array first
+    if (firstVariant.images && firstVariant.images.length > 0) {
+      const primaryImage = firstVariant.images.find(img => img.isPrimary)
+      if (primaryImage) {
+        return primaryImage.imageUrl
+      }
+      // If no primary image, use first image
+      return firstVariant.images[0].imageUrl
+    }
+    
+    // Fallback to legacy imageUrl field
+    return firstVariant.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image'
   }, [imageErrors])
 
   // Toast functions
