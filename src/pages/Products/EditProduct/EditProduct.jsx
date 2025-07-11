@@ -52,7 +52,7 @@ const EditProduct = () => {
     try {
       setLoadingData(true)
       const [categoriesResult, colorsResult, sizesResult, productResult] = await Promise.all([
-        categoryService.getAllCategories(),
+        categoryService.getCategoriesByType('LINK'), // Only get LINK type categories
         colorService.getAllColors(),
         sizeService.getAllSizes(),
         productService.getProduct(productId)

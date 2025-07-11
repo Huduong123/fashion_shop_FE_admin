@@ -1,0 +1,295 @@
+/* === MODERN ADD CATEGORY CHILD FORM STYLES === */
+
+/* --- 1. VARIABLES & GLOBAL STYLES --- */
+:root {
+    /* Colors */
+    --primary-color: #4f46e5; /* Indigo 600 */
+    --primary-hover: #4338ca; /* Indigo 700 */
+    --secondary-color: #6b7280; /* Gray 500 */
+    --secondary-hover: #4b5563; /* Gray 600 */
+    --danger-color: #ef4444; /* Red 500 */
+    --success-color: #22c55e; /* Green 500 */
+    --bg-color: #f9fafb; /* Gray 50 */
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb; /* Gray 200 */
+    --input-bg: #ffffff;
+    --text-dark: #111827; /* Gray 900 */
+    --text-medium: #374151; /* Gray 700 */
+    --text-light: #6b7280; /* Gray 500 */
+  
+    /* Typography */
+    --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    /* Sizing & Spacing */
+    --border-radius: 0.5rem; /* 8px */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  /* Base page styling */
+  .add-category-child-page {
+    font-family: var(--font-family-sans);
+    background-color: var(--bg-color);
+    color: var(--text-medium);
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  
+  /* --- 2. PAGE HEADER --- */
+  .add-category-child-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .add-category-child-page .page-title {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 800;
+    color: var(--success-color);
+    line-height: 1.2;
+    margin: 0;
+  }
+  
+  .add-category-child-page .breadcrumb {
+    margin-bottom: 0.5rem;
+    padding: 0;
+    background-color: transparent;
+  }
+  .add-category-child-page .breadcrumb-item,
+  .add-category-child-page .breadcrumb-item button {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  .add-category-child-page .breadcrumb-item.active {
+    color: var(--text-medium);
+    font-weight: 500;
+  }
+  .add-category-child-page .breadcrumb-item + .breadcrumb-item::before {
+    content: '/';
+    padding: 0 0.5rem;
+    color: var(--border-color);
+  }
+  .add-category-child-page .breadcrumb-item button {
+    transition: color 0.2s ease-in-out;
+  }
+  .add-category-child-page .breadcrumb-item button:hover {
+    color: var(--success-color);
+  }
+  
+  /* --- 3. FORM CONTAINER & CARD --- */
+  .add-category-child-page .form-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .add-category-child-page .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .add-category-child-page .card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .add-category-child-page .card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .add-category-child-page .card-header .card-title {
+    margin: 0;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-category-child-page .card-body {
+    padding: 2.5rem 3rem;
+  }
+
+  /* Loading state styles */
+  .add-category-child-page .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .add-category-child-page .loading-text {
+    margin-top: 1rem;
+    color: var(--text-medium);
+    font-size: 1rem;
+  }
+  
+  /* --- 4. FORM ELEMENTS --- */
+  .add-category-child-page .form-label {
+    font-weight: 600;
+    color: var(--text-medium);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .add-category-child-page .form-control,
+  .add-category-child-page .input-group-text {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--border-radius);
+  }
+  
+  .add-category-child-page .input-group .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .add-category-child-page .input-group .input-group-text {
+    border-right: 0;
+    background-color: #f9fafb;
+    color: var(--text-light);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  
+  .add-category-child-page .form-control:focus {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 3px rgb(34 197 94 / 0.1);
+    outline: none;
+  }
+  
+  .add-category-child-page .form-control::placeholder {
+    color: #9ca3af; /* Gray 400 */
+  }
+  
+  /* Validation states */
+  .add-category-child-page .form-control.is-invalid {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+  }
+  .add-category-child-page .form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+  }
+  .add-category-child-page .invalid-feedback {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .add-category-child-page .form-text {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+  }
+  
+  .add-category-child-page textarea.form-control {
+    min-height: 120px;
+    line-height: 1.6;
+  }
+  
+  /* --- 5. ACTION BUTTONS --- */
+  .add-category-child-page .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .add-category-child-page .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .add-category-child-page .btn:focus {
+    box-shadow: 0 0 0 3px rgb(34 197 94 / 0.2);
+  }
+  
+  /* Success Button (Primary for child) */
+  .add-category-child-page .btn-success {
+    background-color: var(--success-color);
+    color: #fff;
+  }
+  .add-category-child-page .btn-success:hover:not(:disabled) {
+    background-color: #16a34a; /* Green 600 */
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .add-category-child-page .btn-success:disabled {
+    background-color: #86efac; /* Green 300 */
+    cursor: not-allowed;
+  }
+  
+  /* Secondary Button */
+  .add-category-child-page .btn-secondary,
+  .add-category-child-page .btn-outline-secondary {
+    background-color: #fff;
+    color: var(--text-medium);
+    border-color: var(--border-color);
+  }
+  .add-category-child-page .btn-secondary:hover:not(:disabled),
+  .add-category-child-page .btn-outline-secondary:hover:not(:disabled) {
+    background-color: var(--bg-color);
+    border-color: #d1d5db; /* Gray 300 */
+    color: var(--text-dark);
+  }
+
+  /* Danger Button */
+  .add-category-child-page .btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    background-color: #fff;
+  }
+  .add-category-child-page .btn-outline-danger:hover:not(:disabled) {
+    background-color: var(--danger-color);
+    color: #fff;
+  }
+  
+  /* --- 6. RESPONSIVE DESIGN --- */
+  @media (max-width: 768px) {
+    .add-category-child-page {
+      padding: 1.5rem;
+    }
+    .add-category-child-page .page-header {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .add-category-child-page .page-title {
+      font-size: 1.875rem;
+    }
+    .add-category-child-page .card-body {
+      padding: 1.5rem;
+    }
+    .add-category-child-page .form-actions {
+      flex-direction: column-reverse; /* Put primary button on top on mobile */
+      gap: 0.75rem;
+    }
+    .add-category-child-page .btn {
+      width: 100%;
+    }
+  }

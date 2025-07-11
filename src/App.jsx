@@ -11,8 +11,11 @@ import AddProduct from './pages/Products/AddProduct/AddProduct'
 import EditProduct from './pages/Products/EditProduct/EditProduct'
 import ProductDetail from './pages/Products/ProductDetail/ProductDetail'
 import CategoryManagement from './pages/Categories/CategoryManagement'
+import CategoryChild from './pages/Categories/CategoryChild'
 import AddCategory from './pages/Categories/AddCategory/AddCategory'
 import EditCategory from './pages/Categories/EditCategory/EditCategory'
+import AddCategoryChild from './pages/Categories/AddCategoryChild/AddCategoryChild'
+import EditCategoryChild from './pages/Categories/EditCategoryChild/EditCategoryChild'
 import AccountsManagement from './pages/Account/AccountsManagement'
 import AddAccount from './pages/Account/AddAccount/AddAccount'
 import EditAccount from './pages/Account/EditAccount/EditAccount'
@@ -82,7 +85,10 @@ function App() {
           <Route path="products/edit/:productId" element={<EditProduct />} />
           <Route path="products/detail/:id" element={<ProductDetail />} />
           <Route path="products/category/:categoryId" element={<ProductsByCategory />} />
-          <Route path="category" element={<CategoryManagement />} />
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="categories/:parentId/children" element={<CategoryChild />} />
+          <Route path="categories/:parentId/children/add" element={<AddCategoryChild />} />
+          <Route path="categories/:parentId/children/edit/:id" element={<EditCategoryChild />} />
           <Route path="categories/add" element={<AddCategory />} />
           <Route path="categories/edit/:id" element={<EditCategory />} />
           <Route path="account" element={<AccountsManagement />} />

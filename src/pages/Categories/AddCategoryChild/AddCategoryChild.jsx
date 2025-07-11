@@ -1,28 +1,27 @@
-// AddCategory.jsx
-// Cập nhật để hỗ trợ tạo category con
-
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import categoryService from '@/services/categoryService';
 import Toast from '@/components/Toast';
-import './AddCategory.css'; // Chúng ta sẽ thay thế nội dung file này
+import './AddCategoryChild.css';
 
-const AddCategory = () => {
+const AddCategoryChild = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { parentId } = useParams();
   
-  // Get parent category from state (if creating child category)
-  const parentCategory = location.state?.parentCategory || null;
+  // Get parent category from state or fetch it
+  const [parentCategory, setParentCategory] = useState(location.state?.parentCategory || null);
   
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     type: 'DROPDOWN',
     status: 'ACTIVE',
-    parentId: parentCategory?.id || null
+    parentId: parentId
   });
 
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   // Toast states
@@ -32,6 +31,31 @@ const AddCategory = () => {
     title: '',
     message: ''
   });
+
+  useEffect(() => {
+    const loadParentCategory = async () => {
+      if (!parentCategory && parentId) {
+        setInitialLoading(true);
+        try {
+          const result = await categoryService.getCategoryById(parentId);
+          if (result.success) {
+            setParentCategory(result.data);
+          } else {
+            showToast('error', 'Lỗi', 'Không thể tải thông tin danh mục cha');
+            navigate('/categories');
+          }
+        } catch (error) {
+          console.error('Error loading parent category:', error);
+          showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải thông tin danh mục cha');
+          navigate('/categories');
+        } finally {
+          setInitialLoading(false);
+        }
+      }
+    };
+
+    loadParentCategory();
+  }, [parentId, parentCategory, navigate]);
 
   const showToast = (type, title, message = '') => {
     setToast({
@@ -70,11 +94,11 @@ const AddCategory = () => {
 
     // Validate name
     if (!formData.name || formData.name.trim().length < 3) {
-      newErrors.name = 'Tên danh mục phải có ít nhất 3 ký tự';
+      newErrors.name = 'Tên danh mục con phải có ít nhất 3 ký tự';
     } else if (!/.*[a-zA-Z]+.*/.test(formData.name)) {
-      newErrors.name = 'Tên danh mục phải chứa ít nhất một ký tự chữ';
+      newErrors.name = 'Tên danh mục con phải chứa ít nhất một ký tự chữ';
     } else if (formData.name.length > 100) {
-      newErrors.name = 'Tên danh mục không được vượt quá 100 ký tự';
+      newErrors.name = 'Tên danh mục con không được vượt quá 100 ký tự';
     }
 
     // Validate description (optional for child categories)
@@ -115,33 +139,26 @@ const AddCategory = () => {
         description: formData.description.trim(),
         type: formData.type,
         status: formData.status,
-        parentId: formData.parentId
+        parentId: parentId
       };
 
       const result = await categoryService.createCategory(submitData);
 
       if (result.success) {
-        const categoryType = parentCategory ? 'danh mục con' : 'danh mục cha';
-        showToast('success', 'Thành công', `Đã tạo ${categoryType} mới`);
+        showToast('success', 'Thành công', 'Đã tạo danh mục con mới');
         
         // Navigate back after a short delay to show toast
         setTimeout(() => {
-          if (parentCategory) {
-            // Go back to children list if creating child category
-            navigate(`/categories/${parentCategory.id}/children`, {
-              state: { parentCategory }
-            });
-          } else {
-            // Go back to categories list if creating root category
-            navigate('/categories');
-          }
+          navigate(`/categories/${parentId}/children`, {
+            state: { parentCategory }
+          });
         }, 1500);
       } else {
-        showToast('error', 'Lỗi', result.message || 'Có lỗi xảy ra khi tạo danh mục');
+        showToast('error', 'Lỗi', result.message || 'Có lỗi xảy ra khi tạo danh mục con');
       }
     } catch (error) {
-      console.error('Error creating category:', error);
-      showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tạo danh mục');
+      console.error('Error creating category child:', error);
+      showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tạo danh mục con');
     } finally {
       setLoading(false);
     }
@@ -153,23 +170,32 @@ const AddCategory = () => {
       description: '',
       type: 'DROPDOWN',
       status: 'ACTIVE',
-      parentId: parentCategory?.id || null
+      parentId: parentId
     });
     setErrors({});
   };
 
   const handleBack = () => {
-    if (parentCategory) {
-      navigate(`/categories/${parentCategory.id}/children`, {
-        state: { parentCategory }
-      });
-    } else {
-      navigate('/categories');
-    }
+    navigate(`/categories/${parentId}/children`, {
+      state: { parentCategory }
+    });
   };
 
+  if (initialLoading) {
+    return (
+      <div className="add-category-child-page">
+        <div className="loading-container">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <div className="loading-text">Đang tải thông tin danh mục cha...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="add-category-page">
+    <div className="add-category-child-page">
       {/* Header */}
       <header className="page-header">
         <div>
@@ -183,25 +209,22 @@ const AddCategory = () => {
                   Danh mục
                 </button>
               </li>
-              {parentCategory && (
-                <li className="breadcrumb-item">
-                  <button
-                    className="btn btn-link p-0 text-decoration-none"
-                    onClick={() => navigate(`/categories/${parentCategory.id}/children`, {
-                      state: { parentCategory }
-                    })}
-                  >
-                    {parentCategory.name}
-                  </button>
-                </li>
-              )}
+              <li className="breadcrumb-item">
+                <button
+                  className="btn btn-link p-0 text-decoration-none"
+                  onClick={handleBack}
+                >
+                  {parentCategory?.name || 'Danh mục con'}
+                </button>
+              </li>
               <li className="breadcrumb-item active" aria-current="page">
-                {parentCategory ? 'Thêm danh mục con' : 'Thêm danh mục cha'}
+                Thêm danh mục con
               </li>
             </ol>
           </nav>
           <h1 className="page-title">
-            {parentCategory ? `Thêm danh mục con cho "${parentCategory.name}"` : 'Thêm danh mục cha mới'}
+            <i className="bi bi-diagram-3 me-2 text-success"></i>
+            Thêm danh mục con cho "{parentCategory?.name}"
           </h1>
         </div>
         <button
@@ -214,7 +237,7 @@ const AddCategory = () => {
         </button>
       </header>
 
-      {/* Parent Category Info (if creating child) */}
+      {/* Parent Category Info */}
       {parentCategory && (
         <div className="card mb-4">
           <div className="card-body">
@@ -242,7 +265,7 @@ const AddCategory = () => {
           <div className="card-header">
             <h5 className="card-title">
               <i className="bi bi-info-circle me-2"></i>
-              Thông tin {parentCategory ? 'danh mục con' : 'danh mục cha'}
+              Thông tin danh mục con
             </h5>
           </div>
           <div className="card-body">
@@ -250,11 +273,11 @@ const AddCategory = () => {
               {/* Category Name */}
               <div className="mb-4">
                 <label htmlFor="name" className="form-label">
-                  Tên {parentCategory ? 'danh mục con' : 'danh mục cha'} <span className="text-danger">*</span>
+                  Tên danh mục con <span className="text-danger">*</span>
                 </label>
                 <div className="input-group">
                   <span className="input-group-text">
-                    <i className={`bi ${parentCategory ? 'bi-diagram-3' : 'bi-tag-fill'}`}></i>
+                    <i className="bi bi-diagram-3"></i>
                   </span>
                   <input
                     type="text"
@@ -263,26 +286,20 @@ const AddCategory = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder={parentCategory 
-                      ? "VD: Áo polo, Quần jean..." 
-                      : "VD: Thời trang nam, Đồ điện tử..."
-                    }
+                    placeholder="VD: Áo polo, Quần jean, Giày thể thao..."
                     maxLength={100}
                   />
                 </div>
                 {errors.name && <div className="invalid-feedback d-block">{errors.name}</div>}
                 <div className="form-text">
-                  {parentCategory 
-                    ? `Tên danh mục con thuộc "${parentCategory.name}"`
-                    : 'Tên danh mục cha cần rõ ràng, dễ hiểu.'
-                  }
+                  Tên danh mục con thuộc "{parentCategory?.name || 'danh mục cha'}"
                 </div>
               </div>
 
               {/* Category Description */}
               <div className="mb-4">
                 <label htmlFor="description" className="form-label">
-                  Mô tả {!parentCategory && <span className="text-danger">*</span>}
+                  Mô tả <span className="text-muted">(tùy chọn)</span>
                 </label>
                 <textarea
                   className={`form-control ${errors.description ? 'is-invalid' : ''}`}
@@ -291,17 +308,11 @@ const AddCategory = () => {
                   rows="4"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder={parentCategory 
-                    ? "Mô tả ngắn gọn về danh mục con này (tùy chọn)"
-                    : "Mô tả chi tiết về danh mục cha này"
-                  }
+                  placeholder="Mô tả ngắn gọn về danh mục con này..."
                 />
                 {errors.description && <div className="invalid-feedback d-block">{errors.description}</div>}
                 <div className="form-text">
-                  {parentCategory 
-                    ? 'Mô tả chi tiết giúp khách hàng hiểu rõ hơn về nhóm sản phẩm này.'
-                    : 'Mô tả chi tiết về danh mục cha và các sản phẩm thuộc nhóm này.'
-                  }
+                  Mô tả chi tiết giúp khách hàng hiểu rõ hơn về nhóm sản phẩm này.
                 </div>
               </div>
 
@@ -376,7 +387,7 @@ const AddCategory = () => {
                 <div className="d-flex gap-3">
                   <button
                     type="submit"
-                    className={`btn ${parentCategory ? 'btn-success' : 'btn-primary'}`}
+                    className="btn btn-success"
                     disabled={loading}
                   >
                     {loading ? (
@@ -387,7 +398,7 @@ const AddCategory = () => {
                     ) : (
                       <>
                         <i className="bi bi-check-lg me-2"></i>
-                        Tạo {parentCategory ? 'danh mục con' : 'danh mục cha'}
+                        Tạo danh mục con
                       </>
                     )}
                   </button>
@@ -428,4 +439,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default AddCategoryChild;
