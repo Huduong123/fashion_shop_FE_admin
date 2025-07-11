@@ -49,7 +49,7 @@ const AddProduct = () => {
   const loadInitialData = async () => {
     try {
       const [categoriesResult, colorsResult, sizesResult] = await Promise.all([
-        categoryService.getAllCategories(),
+        categoryService.getCategoriesByType('LINK'), // Only get LINK type categories
         colorService.getAllColors(),
         sizeService.getAllSizes()
       ])

@@ -1,13 +1,19 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import categoryService from '@/services/categoryService'
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
 import Toast from '@/components/Toast'
 import './Category.css'
 
-const CategoryManagement = () => {
+const CategoryChild = () => {
+  const { parentId } = useParams()
   const navigate = useNavigate()
-  const [categories, setCategories] = useState([])
+  const location = useLocation()
+  
+  // Get parent category from state or fetch it
+  const [parentCategory, setParentCategory] = useState(location.state?.parentCategory || null)
+  const [categoryPath, setCategoryPath] = useState([])
+  const [childCategories, setChildCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -27,21 +33,40 @@ const CategoryManagement = () => {
   })
 
   useEffect(() => {
-    loadCategories()
-  }, [])
+    loadData()
+  }, [parentId])
 
-  const loadCategories = useCallback(async () => {
+  const loadData = useCallback(async () => {
     setLoading(true)
     setError(null)
     
     try {
-      // Chỉ load root categories (categories cha)
-      const result = await categoryService.getRootCategories()
+      // Load parent category if not available
+      let currentParent = parentCategory
+      if (!currentParent) {
+        const parentResult = await categoryService.getCategoryById(parentId)
+        if (parentResult.success) {
+          currentParent = parentResult.data
+          setParentCategory(currentParent)
+        } else {
+          setError('Không thể tải thông tin danh mục cha')
+          return
+        }
+      }
+
+      // Load category path for breadcrumb navigation
+      const pathResult = await categoryService.getCategoryPath(parentId)
+      if (pathResult.success) {
+        setCategoryPath(pathResult.data || [])
+      }
+
+      // Load child categories
+      const childResult = await categoryService.getChildrenByParentId(parentId)
       
-      if (result.success) {
-        setCategories(result.data || [])
+      if (childResult.success) {
+        setChildCategories(childResult.data || [])
       } else {
-        setError(result.message)
+        setError(childResult.message)
       }
     } catch (error) {
       setError('Failed to load categories')
@@ -49,7 +74,7 @@ const CategoryManagement = () => {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [parentId, parentCategory])
 
   // Toast functions
   const showToast = useCallback((type, title, message = '') => {
@@ -69,7 +94,25 @@ const CategoryManagement = () => {
   }, [])
 
   // Navigation functions
-  const handleViewChildren = useCallback((category) => {
+  const handleAddChild = useCallback(() => {
+    navigate(`/categories/${parentId}/children/add`, {
+      state: { parentCategory: parentCategory }
+    })
+  }, [navigate, parentId, parentCategory])
+
+  const handleBackToParent = useCallback(() => {
+    // Use category path to determine where to go back
+    if (categoryPath.length > 1) {
+      // If there's a parent in the path, go to parent's children page
+      const grandParent = categoryPath[categoryPath.length - 2]
+      navigate(`/categories/${grandParent.id}/children`)
+    } else {
+      // Go to root categories page
+      navigate('/categories')
+    }
+  }, [navigate, categoryPath])
+
+  const handleViewSubChildren = useCallback((category) => {
     navigate(`/categories/${category.id}/children`, {
       state: { parentCategory: category }
     })
@@ -108,7 +151,7 @@ const CategoryManagement = () => {
       
       if (result.success) {
         // Remove category from state immediately for better UX
-        setCategories(prev => prev.filter(c => c.id !== categoryToDelete.id))
+        setChildCategories(prev => prev.filter(c => c.id !== categoryToDelete.id))
         
         // Show success toast
         showToast('success', 'Thành công', `Đã xóa danh mục "${categoryToDelete.name}"`)
@@ -118,7 +161,7 @@ const CategoryManagement = () => {
         setCategoryToDelete(null)
         
         // Reload to get updated data
-        loadCategories()
+        loadData()
       } else {
         showToast('error', 'Lỗi', result.message || 'Không thể xóa danh mục')
       }
@@ -128,23 +171,23 @@ const CategoryManagement = () => {
     } finally {
       setDeleting(false)
     }
-  }, [categoryToDelete, showToast, loadCategories])
+  }, [categoryToDelete, showToast, loadData])
 
   // Pagination logic
   const paginationData = useMemo(() => {
     const indexOfLastCategory = currentPage * categoriesPerPage
     const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage
-    const currentCategories = categories.slice(indexOfFirstCategory, indexOfLastCategory)
-    const totalPages = Math.ceil(categories.length / categoriesPerPage)
+    const currentCategories = childCategories.slice(indexOfFirstCategory, indexOfLastCategory)
+    const totalPages = Math.ceil(childCategories.length / categoriesPerPage)
 
     return {
       indexOfFirstCategory,
-      indexOfLastCategory: Math.min(indexOfLastCategory, categories.length),
+      indexOfLastCategory: Math.min(indexOfLastCategory, childCategories.length),
       currentCategories,
       totalPages,
-      totalElements: categories.length
+      totalElements: childCategories.length
     }
-  }, [categories, currentPage, categoriesPerPage])
+  }, [childCategories, currentPage, categoriesPerPage])
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber)
@@ -191,72 +234,138 @@ const CategoryManagement = () => {
           <i className="bi bi-exclamation-triangle me-2"></i>
           {error}
         </div>
+        <button className="btn btn-secondary" onClick={handleBackToParent}>
+          <i className="bi bi-arrow-left me-2"></i>
+          Quay lại danh sách danh mục cha
+        </button>
       </div>
     )
   }
 
   return (
     <div className="w-100">
+      {/* Breadcrumb */}
+      <nav aria-label="breadcrumb" className="mb-3">
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item">
+            <button 
+              className="btn btn-link p-0 text-decoration-none"
+              onClick={() => navigate('/categories')}
+            >
+              <i className="bi bi-house me-1"></i>
+              Danh mục gốc
+            </button>
+          </li>
+          {categoryPath.length > 1 && categoryPath.slice(0, -1).map((category, index) => (
+            <li key={category.id} className="breadcrumb-item">
+              <button 
+                className="btn btn-link p-0 text-decoration-none"
+                onClick={() => navigate(`/categories/${category.id}/children`)}
+              >
+                <i className="bi bi-diagram-2 me-1"></i>
+                {category.name}
+              </button>
+            </li>
+          ))}
+          <li className="breadcrumb-item active" aria-current="page">
+            <i className="bi bi-diagram-3 me-1"></i>
+            {parentCategory?.name || 'Danh mục con'}
+          </li>
+        </ol>
+      </nav>
+
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4 px-3">
         <div>
           <h2 className="mb-0">
-            <i className="bi bi-tags me-2 text-primary"></i>
-            Quản lý Danh mục Cha
+            <i className="bi bi-diagram-3 me-2 text-success"></i>
+            Danh mục con của "{parentCategory?.name}"
           </h2>
           <small className="text-muted">
-            Tổng số: {categories.length} danh mục cha
+            Tổng số: {childCategories.length} danh mục con
           </small>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/categories/add')}>
-          <i className="bi bi-plus-lg me-2"></i>
-          Thêm Danh mục Cha
-        </button>
+        <div className="d-flex gap-2">
+          <button className="btn btn-secondary" onClick={handleBackToParent}>
+            <i className="bi bi-arrow-left me-2"></i>
+            Quay lại
+          </button>
+          <button className="btn btn-success" onClick={handleAddChild}>
+            <i className="bi bi-plus-lg me-2"></i>
+            Thêm Danh mục Con
+          </button>
+        </div>
       </div>
 
-      {/* Categories Table */}
+      {/* Parent Category Info */}
+      {parentCategory && (
+        <div className="card mb-4">
+          <div className="card-body">
+            <div className="row align-items-center">
+              <div className="col-md-8">
+                <h5 className="card-title mb-1">
+                  <i className="bi bi-tag-fill text-primary me-2"></i>
+                  {parentCategory.name}
+                </h5>
+                <p className="card-text text-muted mb-0">
+                  {parentCategory.description || 'Không có mô tả'}
+                </p>
+              </div>
+              <div className="col-md-4 text-end">
+                <span className="badge bg-primary rounded-pill">
+                  Danh mục cha
+                </span>
+                <div className="mt-2">
+                  <small className="text-muted">
+                    Tạo: {new Date(parentCategory.createdAt).toLocaleDateString('vi-VN')}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Child Categories Table */}
       <div className="category-table-wrapper">
-        {categories.length === 0 ? (
+        {childCategories.length === 0 ? (
           <div className="text-center py-5">
-            <i className="bi bi-tags fs-1 text-muted mb-3 d-block"></i>
-            <h4 className="text-muted">Chưa có danh mục cha nào</h4>
+            <i className="bi bi-diagram-3 fs-1 text-muted mb-3 d-block"></i>
+            <h4 className="text-muted">Chưa có danh mục con nào</h4>
             <p className="text-muted">
-              Tạo danh mục cha đầu tiên để bắt đầu quản lý sản phẩm.
+              Tạo danh mục con đầu tiên cho "{parentCategory?.name}".
             </p>
-            <button className="btn btn-primary" onClick={() => navigate('/categories/add')}>
+            <button className="btn btn-success" onClick={handleAddChild}>
               <i className="bi bi-plus-lg me-2"></i>
-              Tạo Danh mục cha đầu tiên
+              Tạo Danh mục con đầu tiên
             </button>
           </div>
         ) : (
           <>
             <div className="table-responsive w-100">
               <table className="table align-middle categories-table w-100">
-                <thead className="table-primary">
+                <thead className="table-success">
                   <tr>
                     <th scope="col" className="text-center" style={{ width: '60px' }}>
                       STT
                     </th>
                     <th scope="col" style={{ minWidth: '200px' }}>
-                      <i className="bi bi-tag text-primary"></i> Tên danh mục
+                      <i className="bi bi-tag text-success"></i> Tên danh mục con
                     </th>
-                    <th scope="col" style={{ minWidth: '200px' }}>
-                      <i className="bi bi-file-text text-primary"></i> Mô tả
-                    </th>
-                    <th scope="col" className="text-center" style={{ width: '100px' }}>
-                      <i className="bi bi-gear text-primary"></i> Kiểu
+                    <th scope="col" style={{ minWidth: '250px' }}>
+                      <i className="bi bi-file-text text-success"></i> Mô tả
                     </th>
                     <th scope="col" className="text-center" style={{ width: '100px' }}>
-                      <i className="bi bi-toggle-on text-primary"></i> Trạng thái
+                      <i className="bi bi-gear text-success"></i> Kiểu
                     </th>
                     <th scope="col" className="text-center" style={{ width: '100px' }}>
-                      <i className="bi bi-diagram-3 text-primary"></i> Danh mục con
+                      <i className="bi bi-toggle-on text-success"></i> Trạng thái
                     </th>
                     <th scope="col" className="text-center" style={{ width: '120px' }}>
-                      <i className="bi bi-calendar-plus text-primary"></i> Ngày tạo
+                      <i className="bi bi-calendar-plus text-success"></i> Ngày tạo
                     </th>
-                    <th scope="col" className="text-center" style={{ width: '200px' }}>
-                      <i className="bi bi-gear text-primary"></i> Thao tác
+                    <th scope="col" className="text-center" style={{ width: '220px' }}>
+                      <i className="bi bi-gear text-success"></i> Thao tác
                     </th>
                   </tr>
                 </thead>
@@ -272,8 +381,8 @@ const CategoryManagement = () => {
                         <div className="category-info">
                           <h6 className="category-name mb-0">{category.name}</h6>
                           <small className="text-muted">
-                            <i className="bi bi-arrow-up-right-circle me-1"></i>
-                            Danh mục gốc
+                            <i className="bi bi-arrow-down-right-circle me-1"></i>
+                            Danh mục con
                           </small>
                         </div>
                       </td>
@@ -313,18 +422,6 @@ const CategoryManagement = () => {
                         </div>
                       </td>
                       <td className="text-center">
-                        <div className="children-info">
-                          <span className="badge bg-info rounded-pill">
-                            {category.childrenCount || 0}
-                          </span>
-                          {category.childrenCount > 0 && (
-                            <small className="d-block text-muted mt-1">
-                              danh mục con
-                            </small>
-                          )}
-                        </div>
-                      </td>
-                      <td className="text-center">
                         <div className="date-container">
                           <span className="date-value fw-medium">
                             {new Date(category.createdAt).toLocaleDateString('vi-VN')}
@@ -343,7 +440,7 @@ const CategoryManagement = () => {
                             <button 
                               className="btn btn-outline-success btn-sm action-btn me-1"
                               title="Xem danh mục con"
-                              onClick={() => handleViewChildren(category)}
+                              onClick={() => handleViewSubChildren(category)}
                             >
                               <i className="bi bi-diagram-3"></i>
                             </button>
@@ -363,7 +460,9 @@ const CategoryManagement = () => {
                             className="btn btn-outline-warning btn-sm action-btn me-1"
                             title="Chỉnh sửa"
                             onClick={() => {
-                              navigate(`/categories/edit/${category.id}`)
+                              navigate(`/categories/${parentId}/children/edit/${category.id}`, {
+                                state: { parentCategory: parentCategory }
+                              })
                             }}
                           >
                             <i className="bi bi-pencil"></i>
@@ -389,7 +488,7 @@ const CategoryManagement = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="pagination-status">
                     <div className="text-muted">
-                      Hiển thị {paginationData.indexOfFirstCategory + 1} - {paginationData.indexOfLastCategory} của {paginationData.totalElements} danh mục cha
+                      Hiển thị {paginationData.indexOfFirstCategory + 1} - {paginationData.indexOfLastCategory} của {paginationData.totalElements} danh mục con
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <label htmlFor="categoriesPerPage" className="form-label mb-0 text-muted small">
@@ -504,4 +603,4 @@ const CategoryManagement = () => {
   )
 }
 
-export default CategoryManagement
+export default CategoryChild

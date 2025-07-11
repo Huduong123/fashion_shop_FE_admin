@@ -47,7 +47,7 @@ const AdminLayout = () => {
       items: [
         { name: 'Dashboard', icon: 'bi-speedometer2', path: '/dashboard' },
         { name: 'Products', icon: 'bi-box-seam', path: '/products' },
-        { name: 'Category', icon: 'bi-folder', path: '/category' },
+        { name: 'Category', icon: 'bi-folder', path: '/categories' },
         { name: 'Inventory', icon: 'bi-clipboard-data', path: '/inventory' },
         { name: 'Orders', icon: 'bi-cart3', path: '/orders' },
         { name: 'Purchases', icon: 'bi-cash-coin', path: '/purchases' },

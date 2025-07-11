@@ -63,7 +63,7 @@ const ProductsManagement = () => {
     try {
       const [productsResult, categoriesResult] = await Promise.all([
         searchParams ? productService.searchProducts(searchParams) : productService.getAllProducts(),
-        categoryService.getAllCategories()
+        categoryService.getCategoriesByType('LINK') // Only get LINK type categories
       ])
 
       if (productsResult.success) {

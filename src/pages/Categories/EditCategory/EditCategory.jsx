@@ -10,7 +10,9 @@ const EditCategory = () => {
   
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    type: 'DROPDOWN',
+    status: 'ACTIVE'
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,7 @@ const EditCategory = () => {
   useEffect(() => {
     const loadCategory = async () => {
       if (!id) {
-        navigate('/category');
+        navigate('/categories');
         return;
       }
 
@@ -57,7 +59,9 @@ const EditCategory = () => {
         if (result.success) {
           setFormData({
             name: result.data.name || '',
-            description: result.data.description || ''
+            description: result.data.description || '',
+            type: result.data.type || 'DROPDOWN',
+            status: result.data.status || 'ACTIVE'
           });
         } else {
           setCategoryNotFound(true);
@@ -110,6 +114,16 @@ const EditCategory = () => {
       newErrors.description = 'Mô tả phải chứa ít nhất một ký tự chữ';
     }
 
+    // Validate type
+    if (!formData.type) {
+      newErrors.type = 'Vui lòng chọn kiểu danh mục';
+    }
+
+    // Validate status
+    if (!formData.status) {
+      newErrors.status = 'Vui lòng chọn trạng thái danh mục';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -126,7 +140,9 @@ const EditCategory = () => {
     try {
       const submitData = {
         name: formData.name.trim(),
-        description: formData.description.trim()
+        description: formData.description.trim(),
+        type: formData.type,
+        status: formData.status
       };
 
       const result = await categoryService.updateCategory(id, submitData);
@@ -135,7 +151,7 @@ const EditCategory = () => {
         showToast('success', 'Thành công', 'Đã cập nhật danh mục');
         // Navigate back after a short delay to show toast
         setTimeout(() => {
-          navigate('/category');
+          navigate('/categories');
         }, 1500);
       } else {
         showToast('error', 'Lỗi', result.message || 'Có lỗi xảy ra khi cập nhật danh mục');
@@ -157,7 +173,9 @@ const EditCategory = () => {
       if (result.success) {
         setFormData({
           name: result.data.name || '',
-          description: result.data.description || ''
+          description: result.data.description || '',
+          type: result.data.type || 'DROPDOWN',
+          status: result.data.status || 'ACTIVE'
         });
         setErrors({});
         showToast('info', 'Đã khôi phục', 'Dữ liệu đã được khôi phục về trạng thái ban đầu');
@@ -196,7 +214,7 @@ const EditCategory = () => {
               <p className="text-muted">Danh mục bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
               <button
                 className="btn btn-primary"
-                onClick={() => navigate('/category')}
+                onClick={() => navigate('/categories')}
               >
                 <i className="bi bi-arrow-left me-2"></i>
                 Quay lại danh sách
@@ -218,7 +236,7 @@ const EditCategory = () => {
               <li className="breadcrumb-item">
                 <button
                   className="btn btn-link p-0 text-decoration-none"
-                  onClick={() => navigate('/category')}
+                  onClick={() => navigate('/categories')}
                 >
                   Danh mục
                 </button>
@@ -233,7 +251,7 @@ const EditCategory = () => {
         <button
           type="button"
           className="btn btn-outline-secondary"
-          onClick={() => navigate('/category')}
+            onClick={() => navigate('/categories')}
         >
           <i className="bi bi-arrow-left me-2"></i>
           Quay lại
@@ -294,6 +312,72 @@ const EditCategory = () => {
                 {errors.description && (
                   <div className="invalid-feedback d-block">{errors.description}</div>
                 )}
+              </div>
+
+              {/* Category Type */}
+              <div className="mb-4">
+                <label htmlFor="type" className="form-label">
+                  Kiểu danh mục <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="bi bi-gear"></i>
+                  </span>
+                  <select
+                    className={`form-select ${errors.type ? 'is-invalid' : ''}`}
+                    id="type"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                  >
+                    <option value="DROPDOWN">
+                      <i className="bi bi-folder me-2"></i>
+                      Thư mục (chỉ phân nhóm)
+                    </option>
+                    <option value="LINK">
+                      <i className="bi bi-link me-2"></i>
+                      Liên kết (có thể chứa sản phẩm)
+                    </option>
+                  </select>
+                </div>
+                {errors.type && <div className="invalid-feedback d-block">{errors.type}</div>}
+                <div className="form-text">
+                  <strong>Thư mục:</strong> Chỉ để phân nhóm, không thể chứa sản phẩm trực tiếp.<br/>
+                  <strong>Liên kết:</strong> Có thể chứa sản phẩm trực tiếp.
+                </div>
+              </div>
+
+              {/* Category Status */}
+              <div className="mb-4">
+                <label htmlFor="status" className="form-label">
+                  Trạng thái <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="bi bi-toggle-on"></i>
+                  </span>
+                  <select
+                    className={`form-select ${errors.status ? 'is-invalid' : ''}`}
+                    id="status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                  >
+                    <option value="ACTIVE">
+                      <i className="bi bi-check-circle me-2"></i>
+                      Hoạt động
+                    </option>
+                    <option value="INACTIVE">
+                      <i className="bi bi-x-circle me-2"></i>
+                      Vô hiệu hóa
+                    </option>
+                  </select>
+                </div>
+                {errors.status && <div className="invalid-feedback d-block">{errors.status}</div>}
+                <div className="form-text">
+                  <strong>Hoạt động:</strong> Danh mục hiển thị và có thể sử dụng.<br/>
+                  <strong>Vô hiệu hóa:</strong> Danh mục bị ẩn và không thể sử dụng.
+                </div>
               </div>
 
               {/* Action Buttons */}
