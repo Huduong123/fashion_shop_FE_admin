@@ -131,9 +131,7 @@ const AddProduct = () => {
         ...prev.productVariants,
         {
           colorId: '',
-          sizeId: '',
-          price: '',
-          quantity: '',
+          sizes: [{ sizeId: '', price: '', quantity: '' }], // Multiple sizes with individual price/quantity
           imageUrl: '', // Keep for backward compatibility
           images: [], // New field for multiple images
           status: PRODUCT_VARIANT_STATUS.ACTIVE
@@ -177,6 +175,54 @@ const AddProduct = () => {
     }
   }
 
+  // Helper functions for managing sizes within variants
+  const addSizeToVariant = (variantIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      productVariants: prev.productVariants.map((variant, i) => 
+        i === variantIndex ? {
+          ...variant,
+          sizes: [...variant.sizes, { sizeId: '', price: '', quantity: '' }]
+        } : variant
+      )
+    }))
+  }
+
+  const removeSizeFromVariant = (variantIndex, sizeIndex) => {
+    setFormData(prev => ({
+      ...prev,
+      productVariants: prev.productVariants.map((variant, i) => 
+        i === variantIndex ? {
+          ...variant,
+          sizes: variant.sizes.filter((_, j) => j !== sizeIndex)
+        } : variant
+      )
+    }))
+  }
+
+  const handleSizeChange = (variantIndex, sizeIndex, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      productVariants: prev.productVariants.map((variant, i) => 
+        i === variantIndex ? {
+          ...variant,
+          sizes: variant.sizes.map((size, j) => 
+            j === sizeIndex ? { ...size, [field]: value } : size
+          )
+        } : variant
+      )
+    }))
+
+    // Clear error for this size field when user starts typing
+    const errorKey = `variant_${variantIndex}_size_${sizeIndex}_${field}`
+    if (errors[errorKey]) {
+      setErrors(prev => ({
+        ...prev,
+        [errorKey]: null
+      }))
+    }
+  }
+
   const validateForm = () => {
     const newErrors = {}
 
@@ -201,16 +247,29 @@ const AddProduct = () => {
       if (!variant.colorId) {
         newErrors[`variant_${i}_colorId`] = 'Vui lòng chọn màu sắc'
       }
-      if (!variant.price) {
-        newErrors[`variant_${i}_price`] = 'Vui lòng nhập giá'
-      } else if (parseFloat(variant.price) <= 0) {
-        newErrors[`variant_${i}_price`] = 'Giá phải lớn hơn 0'
+      
+      // Validate sizes
+      if (!variant.sizes || variant.sizes.length === 0) {
+        newErrors[`variant_${i}_sizes`] = 'Vui lòng thêm ít nhất một kích thước'
+      } else {
+        for (let j = 0; j < variant.sizes.length; j++) {
+          const size = variant.sizes[j]
+          if (!size.sizeId) {
+            newErrors[`variant_${i}_size_${j}_sizeId`] = 'Vui lòng chọn kích thước'
+          }
+          if (!size.price) {
+            newErrors[`variant_${i}_size_${j}_price`] = 'Vui lòng nhập giá'
+          } else if (parseFloat(size.price) <= 0) {
+            newErrors[`variant_${i}_size_${j}_price`] = 'Giá phải lớn hơn 0'
       }
-      if (!variant.quantity) {
-        newErrors[`variant_${i}_quantity`] = 'Vui lòng nhập số lượng'
-      } else if (parseInt(variant.quantity) < 0) {
-        newErrors[`variant_${i}_quantity`] = 'Số lượng không thể âm'
+          if (!size.quantity) {
+            newErrors[`variant_${i}_size_${j}_quantity`] = 'Vui lòng nhập số lượng'
+          } else if (parseInt(size.quantity) < 0) {
+            newErrors[`variant_${i}_size_${j}_quantity`] = 'Số lượng không thể âm'
       }
+        }
+      }
+      
       if (!variant.images || variant.images.length === 0) {
         newErrors[`variant_${i}_images`] = 'Vui lòng thêm ít nhất một ảnh cho biến thể'
       }
@@ -235,9 +294,11 @@ const AddProduct = () => {
         categoryId: parseInt(formData.categoryId),
         productVariants: formData.productVariants.map(variant => ({
           colorId: parseInt(variant.colorId),
-          sizeId: variant.sizeId ? parseInt(variant.sizeId) : null,
-          price: parseFloat(variant.price),
-          quantity: parseInt(variant.quantity),
+          sizes: variant.sizes.map(size => ({
+            sizeId: parseInt(size.sizeId),
+            price: parseFloat(size.price),
+            quantity: parseInt(size.quantity)
+          })),
           imageUrl: variant.imageUrl || null, // Keep for backward compatibility
           images: variant.images || [], // New multiple images field
           status: variant.status || PRODUCT_VARIANT_STATUS.ACTIVE
@@ -489,19 +550,57 @@ const AddProduct = () => {
                                 )}
                               </div>
                               <div className="col-12">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                  <label className="form-label mb-0">
+                                    Kích thước và giá <span className="text-danger">*</span>
+                                  </label>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary"
+                                    onClick={() => addSizeToVariant(index)}
+                                  >
+                                    <i className="bi bi-plus me-1"></i>
+                                    Thêm size
+                                  </button>
+                                </div>
+                                
+                                {errors[`variant_${index}_sizes`] && (
+                                  <div className="alert alert-danger py-2" role="alert">
+                                    <i className="bi bi-exclamation-triangle me-2"></i>
+                                    {errors[`variant_${index}_sizes`]}
+                                  </div>
+                                )}
+                                
+                                <div className="variant-sizes-container">
+                                  {variant.sizes.map((size, sizeIndex) => (
+                                    <div key={sizeIndex} className="variant-size-item border rounded p-3 mb-3">
+                                      <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 className="mb-0">Kích thước {sizeIndex + 1}</h6>
+                                        {variant.sizes.length > 1 && (
+                                          <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-danger"
+                                            onClick={() => removeSizeFromVariant(index, sizeIndex)}
+                                          >
+                                            <i className="bi bi-trash"></i>
+                                          </button>
+                                        )}
+                                      </div>
+                                      <div className="row g-2">
+                              <div className="col-12">
                                 <label className="form-label">
-                                  Kích thước <span className="text-muted">(Tùy chọn)</span>
+                                            Size <span className="text-danger">*</span>
                                 </label>
                                 <div className="input-group">
                                   <select
-                                    className="form-select"
-                                    value={variant.sizeId}
-                                    onChange={(e) => handleVariantChange(index, 'sizeId', e.target.value)}
+                                              className={`form-select ${errors[`variant_${index}_size_${sizeIndex}_sizeId`] ? 'is-invalid' : ''}`}
+                                              value={size.sizeId}
+                                              onChange={(e) => handleSizeChange(index, sizeIndex, 'sizeId', e.target.value)}
                                   >
-                                    <option value="">Chọn size (không bắt buộc)</option>
-                                    {sizes.map(size => (
-                                      <option key={size.id} value={size.id}>
-                                        {size.name}
+                                              <option value="">Chọn size</option>
+                                              {sizes.map(s => (
+                                                <option key={s.id} value={s.id}>
+                                                  {s.name}
                                       </option>
                                     ))}
                                   </select>
@@ -514,6 +613,11 @@ const AddProduct = () => {
                                     <i className="bi bi-plus"></i>
                                   </button>
                                 </div>
+                                          {errors[`variant_${index}_size_${sizeIndex}_sizeId`] && (
+                                            <div className="invalid-feedback d-block">
+                                              {errors[`variant_${index}_size_${sizeIndex}_sizeId`]}
+                                            </div>
+                                          )}
                               </div>
                               <div className="col-6">
                                 <label className="form-label">
@@ -521,16 +625,16 @@ const AddProduct = () => {
                                 </label>
                                 <input
                                   type="number"
-                                  className={`form-control ${errors[`variant_${index}_price`] ? 'is-invalid' : ''}`}
-                                  value={variant.price}
-                                  onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                                            className={`form-control ${errors[`variant_${index}_size_${sizeIndex}_price`] ? 'is-invalid' : ''}`}
+                                            value={size.price}
+                                            onChange={(e) => handleSizeChange(index, sizeIndex, 'price', e.target.value)}
                                   placeholder="0"
                                   min="0"
                                   step="0.01"
                                 />
-                                {errors[`variant_${index}_price`] && (
+                                          {errors[`variant_${index}_size_${sizeIndex}_price`] && (
                                   <div className="invalid-feedback d-block">
-                                    {errors[`variant_${index}_price`]}
+                                              {errors[`variant_${index}_size_${sizeIndex}_price`]}
                                   </div>
                                 )}
                               </div>
@@ -540,17 +644,22 @@ const AddProduct = () => {
                                 </label>
                                 <input
                                   type="number"
-                                  className={`form-control ${errors[`variant_${index}_quantity`] ? 'is-invalid' : ''}`}
-                                  value={variant.quantity}
-                                  onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
+                                            className={`form-control ${errors[`variant_${index}_size_${sizeIndex}_quantity`] ? 'is-invalid' : ''}`}
+                                            value={size.quantity}
+                                            onChange={(e) => handleSizeChange(index, sizeIndex, 'quantity', e.target.value)}
                                   placeholder="0"
                                   min="0"
                                 />
-                                {errors[`variant_${index}_quantity`] && (
+                                          {errors[`variant_${index}_size_${sizeIndex}_quantity`] && (
                                   <div className="invalid-feedback d-block">
-                                    {errors[`variant_${index}_quantity`]}
+                                              {errors[`variant_${index}_size_${sizeIndex}_quantity`]}
                                   </div>
                                 )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                               <div className="col-6">
                                 <label className="form-label">
