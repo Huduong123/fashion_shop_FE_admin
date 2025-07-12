@@ -280,6 +280,51 @@
   color: var(--text-light) !important;
 }
 
+/* --- VARIANT SIZES CONTAINER --- */
+.edit-product-page .variant-sizes-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #fafafa;
+}
+
+.edit-product-page .variant-size-item {
+  background-color: #fff;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.edit-product-page .variant-size-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.edit-product-page .variant-size-item h6 {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.edit-product-page .variant-size-item .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.edit-product-page .variant-size-item .form-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.edit-product-page .variant-size-item .form-control,
+.edit-product-page .variant-size-item .form-select {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .edit-product-page {
@@ -288,5 +333,14 @@
   .edit-product-page .card-body,
   .edit-product-page .card-header {
     padding: 1rem;
+  }
+  
+  .edit-product-page .variant-sizes-container {
+    max-height: 300px;
+    padding: 0.75rem;
+  }
+  
+  .edit-product-page .variant-size-item {
+    padding: 0.75rem !important;
   }
 }

@@ -115,12 +115,22 @@ const ProductsManagement = () => {
 
   const getLowestPrice = useCallback((variants) => {
     if (!variants || variants.length === 0) return 0
-    return Math.min(...variants.map(variant => variant.price))
+    
+    // Use minPrice from each variant and find the minimum among all variants
+    const prices = variants
+      .map(variant => variant.minPrice)
+      .filter(price => price != null && price > 0)
+    
+    return prices.length > 0 ? Math.min(...prices) : 0
   }, [])
 
   const getTotalQuantity = useCallback((variants) => {
     if (!variants || variants.length === 0) return 0
-    return variants.reduce((total, variant) => total + variant.quantity, 0)
+    
+    // Sum up totalQuantity from all variants
+    return variants.reduce((total, variant) => {
+      return total + (variant.totalQuantity || 0)
+    }, 0)
   }, [])
 
 

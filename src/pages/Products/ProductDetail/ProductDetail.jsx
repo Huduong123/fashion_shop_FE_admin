@@ -111,17 +111,33 @@ const ProductDetail = () => {
 
   const getTotalQuantity = () => {
     if (!product?.productVariants) return 0
-    return product.productVariants.reduce((total, variant) => total + variant.quantity, 0)
+    
+    // Sum up totalQuantity from all variants
+    return product.productVariants.reduce((total, variant) => {
+      return total + (variant.totalQuantity || 0)
+    }, 0)
   }
 
   const getLowestPrice = () => {
     if (!product?.productVariants || product.productVariants.length === 0) return 0
-    return Math.min(...product.productVariants.map(variant => variant.price))
+    
+    // Use minPrice from each variant and find the minimum among all variants
+    const prices = product.productVariants
+      .map(variant => variant.minPrice)
+      .filter(price => price != null && price > 0)
+    
+    return prices.length > 0 ? Math.min(...prices) : 0
   }
 
   const getHighestPrice = () => {
     if (!product?.productVariants || product.productVariants.length === 0) return 0
-    return Math.max(...product.productVariants.map(variant => variant.price))
+    
+    // Use maxPrice from each variant and find the maximum among all variants
+    const prices = product.productVariants
+      .map(variant => variant.maxPrice)
+      .filter(price => price != null && price > 0)
+    
+    return prices.length > 0 ? Math.max(...prices) : 0
   }
 
   if (loading) {
@@ -319,17 +335,30 @@ const ProductDetail = () => {
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Kích thước:</span>
-                        <span className="detail-value">{variant.sizeName || 'Không có'}</span>
+                        <span className="detail-value">
+                          {variant.sizes && variant.sizes.length > 0 
+                            ? variant.sizes.map(size => size.sizeName).join(', ')
+                            : 'Không có'
+                          }
+                        </span>
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Giá:</span>
-                        <span className="detail-value price">{formatPrice(variant.price)}</span>
+                        <span className="detail-value price">
+                          {variant.minPrice && variant.maxPrice 
+                            ? (variant.minPrice === variant.maxPrice 
+                                ? formatPrice(variant.minPrice)
+                                : `${formatPrice(variant.minPrice)} - ${formatPrice(variant.maxPrice)}`
+                              )
+                            : 'Chưa có giá'
+                          }
+                        </span>
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Số lượng:</span>
-                        <span className={`detail-value quantity ${variant.quantity === 0 ? 'out-of-stock' : ''}`}>
-                          {variant.quantity}
-                          {variant.quantity === 0 && <span className="stock-status"> (Hết hàng)</span>}
+                        <span className={`detail-value quantity ${(variant.totalQuantity || 0) === 0 ? 'out-of-stock' : ''}`}>
+                          {variant.totalQuantity || 0}
+                          {(variant.totalQuantity || 0) === 0 && <span className="stock-status"> (Hết hàng)</span>}
                         </span>
                       </div>
                       <div className="detail-row">
@@ -382,24 +411,37 @@ const ProductDetail = () => {
                   <div className="info-group">
                     <label>Kích thước:</label>
                     <p className="info-value">
-                      <span className="badge bg-secondary">
-                        {selectedVariant.sizeName || 'Không có'}
-                      </span>
+                      {selectedVariant.sizes && selectedVariant.sizes.length > 0 
+                        ? selectedVariant.sizes.map(size => (
+                            <span key={size.id} className="badge bg-secondary me-1">
+                              {size.sizeName}
+                            </span>
+                          ))
+                        : <span className="badge bg-secondary">Không có</span>
+                      }
                     </p>
                   </div>
                   <div className="info-group">
                     <label>Giá bán:</label>
                     <p className="info-value">
-                      <span className="price-highlight">{formatPrice(selectedVariant.price)}</span>
+                      <span className="price-highlight">
+                        {selectedVariant.minPrice && selectedVariant.maxPrice 
+                          ? (selectedVariant.minPrice === selectedVariant.maxPrice 
+                              ? formatPrice(selectedVariant.minPrice)
+                              : `${formatPrice(selectedVariant.minPrice)} - ${formatPrice(selectedVariant.maxPrice)}`
+                            )
+                          : 'Chưa có giá'
+                        }
+                      </span>
                     </p>
                   </div>
                   <div className="info-group">
                     <label>Số lượng tồn kho:</label>
                     <p className="info-value">
-                      <span className={`quantity-badge ${selectedVariant.quantity === 0 ? 'out-of-stock' : selectedVariant.quantity < 10 ? 'low-stock' : 'in-stock'}`}>
-                        {selectedVariant.quantity}
-                        {selectedVariant.quantity === 0 && ' (Hết hàng)'}
-                        {selectedVariant.quantity > 0 && selectedVariant.quantity < 10 && ' (Sắp hết)'}
+                      <span className={`quantity-badge ${(selectedVariant.totalQuantity || 0) === 0 ? 'out-of-stock' : (selectedVariant.totalQuantity || 0) < 10 ? 'low-stock' : 'in-stock'}`}>
+                        {selectedVariant.totalQuantity || 0}
+                        {(selectedVariant.totalQuantity || 0) === 0 && ' (Hết hàng)'}
+                        {(selectedVariant.totalQuantity || 0) > 0 && (selectedVariant.totalQuantity || 0) < 10 && ' (Sắp hết)'}
                       </span>
                     </p>
                   </div>
@@ -411,6 +453,29 @@ const ProductDetail = () => {
                       </span>
                     </p>
                   </div>
+                  
+                  {/* Size Details */}
+                  {selectedVariant.sizes && selectedVariant.sizes.length > 0 && (
+                    <div className="info-group">
+                      <label>Chi tiết theo kích thước:</label>
+                      <div className="sizes-detail">
+                        {selectedVariant.sizes.map(size => (
+                          <div key={size.id} className="size-detail-item">
+                            <div className="size-header">
+                              <span className="size-name">{size.sizeName}</span>
+                              <span className={`size-availability ${size.available ? 'available' : 'unavailable'}`}>
+                                {size.available ? 'Có sẵn' : 'Hết hàng'}
+                              </span>
+                            </div>
+                            <div className="size-info">
+                              <span className="size-price">{formatPrice(size.price)}</span>
+                              <span className="size-quantity">SL: {size.quantity}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
