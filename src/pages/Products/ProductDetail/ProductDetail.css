@@ -72,11 +72,13 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 .card-header {
-  background: var(--gradient-primary);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-bottom: none;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .card-body {
@@ -90,12 +92,10 @@ body {
 
 .info-group label {
   display: block;
-  font-weight: 600;
-  color: var(--text-color-muted);
+  font-weight: 500;
+  color: #6c757d;
   margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 }
 
 .info-value {
@@ -107,6 +107,8 @@ body {
   font-size: 1rem;
   line-height: 1.5;
   color: var(--text-color);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .description-content .info-value {
@@ -393,6 +395,8 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .quantity-badge {
@@ -419,12 +423,13 @@ body {
 
 /* --- IMAGES GALLERY SECTION --- */
 .variant-images-section {
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: var(--border-radius-md);
-  border: 1px solid #e9ecef;
+  width: 100%;
 }
-
+.variant-images-section .section-title {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
 .section-title {
   color: var(--text-color);
   font-weight: 600;
@@ -462,7 +467,7 @@ body {
 
 .gallery-image {
   width: 100%;
-  height: 200px;
+  height: 320px; /* TĂNG CHIỀU CAO ẢNH */
   object-fit: cover;
   transition: transform 0.3s ease;
   cursor: pointer;
@@ -584,7 +589,7 @@ body {
 /* --- RESPONSIVE FOR GALLERY --- */
 @media (max-width: 1200px) {
   .gallery-image {
-    height: 180px;
+    height: 280px;
   }
 }
 
@@ -594,7 +599,7 @@ body {
   }
   
   .gallery-image {
-    height: 160px;
+    height: 250px;
   }
   
   .section-title {
@@ -608,7 +613,7 @@ body {
   }
   
   .gallery-image {
-    height: 200px;
+    height: 280px;
   }
   
   .image-actions {
@@ -626,7 +631,7 @@ body {
   }
   
   .gallery-image {
-    height: 180px;
+    height: 240px;
   }
   
   .image-info {
@@ -643,4 +648,97 @@ body {
     font-size: 1rem;
     margin-bottom: 1rem;
   }
+}
+
+/* --- SIZE DETAILS STYLES --- */
+.sizes-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.size-detail-item-inline {
+  background-color: #f0f2f5;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+.size-detail-item-inline .size-summary {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.size-summary {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+  display: block;
+}
+
+/* --- PRICE CONTAINER SPECIFIC STYLES --- */
+.info-group .info-value .price-highlight {
+  min-width: max-content;
+  width: 100%;
+}
+
+/* Styles for the new horizontal properties layout */
+.variant-properties-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px; /* Space between items */
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6; /* Separator line */
+  margin-bottom: 1.5rem; /* Space between properties and image gallery */
+}
+
+.variant-properties-wrapper .info-group {
+  margin-bottom: 0;
+  flex: 1 1 auto; /* Allow items to grow and shrink */
+  min-width: 150px; /* Minimum width for each item */
+}
+
+.variant-properties-wrapper .info-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.variant-properties-wrapper .info-group .info-value {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.variant-properties-wrapper .info-group .info-value .badge {
+  font-size: 0.9em;
+  vertical-align: middle;
+}
+
+.variant-properties-wrapper .info-group .price-highlight {
+    font-size: 1.1rem;
+    color: #198754; /* Green color for price */
+}
+
+.variant-properties-wrapper .info-group .quantity-badge {
+  display: inline-block;
+  padding: 0.3em 0.6em;
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  background-color: #d1e7dd; /* Light green for in-stock */
+  color: #0f5132;
+}
+
+.variant-properties-wrapper .info-group .quantity-badge.out-of-stock {
+  background-color: #f8d7da;
+  color: #842029;
 }
