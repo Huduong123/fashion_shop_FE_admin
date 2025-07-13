@@ -394,191 +394,175 @@ const ProductDetail = () => {
             </h4>
           </div>
           <div className="card-body">
-            <div className="row">
-              {/* Variant Info */}
-              <div className="col-lg-4">
-                <div className="variant-detail-info">
-                  <div className="info-group">
-                    <label>ID biến thể:</label>
-                    <p className="info-value">#{selectedVariant.id}</p>
-                  </div>
-                  <div className="info-group">
-                    <label>Màu sắc:</label>
-                    <p className="info-value">
-                      <span className="badge bg-primary">{selectedVariant.colorName}</span>
-                    </p>
-                  </div>
-                  <div className="info-group">
-                    <label>Kích thước:</label>
-                    <p className="info-value">
-                      {selectedVariant.sizes && selectedVariant.sizes.length > 0 
-                        ? selectedVariant.sizes.map(size => (
-                            <span key={size.id} className="badge bg-secondary me-1">
-                              {size.sizeName}
-                            </span>
-                          ))
-                        : <span className="badge bg-secondary">Không có</span>
-                      }
-                    </p>
-                  </div>
-                  <div className="info-group">
-                    <label>Giá bán:</label>
-                    <p className="info-value">
-                      <span className="price-highlight">
-                        {selectedVariant.minPrice && selectedVariant.maxPrice 
-                          ? (selectedVariant.minPrice === selectedVariant.maxPrice 
-                              ? formatPrice(selectedVariant.minPrice)
-                              : `${formatPrice(selectedVariant.minPrice)} - ${formatPrice(selectedVariant.maxPrice)}`
-                            )
-                          : 'Chưa có giá'
-                        }
+            <div className="variant-properties-wrapper">
+              <div className="info-group">
+                <label>ID biến thể:</label>
+                <p className="info-value">#{selectedVariant.id}</p>
+              </div>
+              <div className="info-group">
+                <label>Màu sắc:</label>
+                <p className="info-value">
+                  <span className="badge bg-primary">{selectedVariant.colorName}</span>
+                </p>
+              </div>
+              <div className="info-group">
+                <label>Kích thước:</label>
+                <p className="info-value">
+                  {selectedVariant.sizes && selectedVariant.sizes.length > 0
+                    ? selectedVariant.sizes.map(size => (
+                      <span key={size.id} className="badge bg-secondary me-1">
+                        {size.sizeName}
                       </span>
-                    </p>
-                  </div>
-                  <div className="info-group">
-                    <label>Số lượng tồn kho:</label>
-                    <p className="info-value">
-                      <span className={`quantity-badge ${(selectedVariant.totalQuantity || 0) === 0 ? 'out-of-stock' : (selectedVariant.totalQuantity || 0) < 10 ? 'low-stock' : 'in-stock'}`}>
-                        {selectedVariant.totalQuantity || 0}
-                        {(selectedVariant.totalQuantity || 0) === 0 && ' (Hết hàng)'}
-                        {(selectedVariant.totalQuantity || 0) > 0 && (selectedVariant.totalQuantity || 0) < 10 && ' (Sắp hết)'}
+                    ))
+                    : <span className="badge bg-secondary">Không có</span>
+                  }
+                </p>
+              </div>
+              <div className="info-group">
+                <label>Giá bán:</label>
+                <p className="info-value">
+                  <span className="price-highlight">
+                    {selectedVariant.minPrice && selectedVariant.maxPrice
+                      ? (selectedVariant.minPrice === selectedVariant.maxPrice
+                        ? formatPrice(selectedVariant.minPrice)
+                        : `${formatPrice(selectedVariant.minPrice)} - ${formatPrice(selectedVariant.maxPrice)}`
+                      )
+                      : 'Chưa có giá'
+                    }
+                  </span>
+                </p>
+              </div>
+              <div className="info-group">
+                <label>Số lượng tồn kho:</label>
+                <p className="info-value">
+                  <span className={`quantity-badge ${(selectedVariant.totalQuantity || 0) === 0 ? 'out-of-stock' : (selectedVariant.totalQuantity || 0) < 10 ? 'low-stock' : 'in-stock'}`}>
+                    {selectedVariant.totalQuantity || 0}
+                  </span>
+                </p>
+              </div>
+              <div className="info-group">
+                <label>Trạng thái:</label>
+                <p className="info-value">
+                  <span className={`badge bg-${PRODUCT_VARIANT_STATUS_COLORS[selectedVariant.status || 'ACTIVE']}`}>
+                    {PRODUCT_VARIANT_STATUS_LABELS[selectedVariant.status || 'ACTIVE']}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Size Details */}
+            {selectedVariant.sizes && selectedVariant.sizes.length > 0 && (
+              <div className="info-group">
+                <label>Chi tiết theo kích thước:</label>
+                <div className="sizes-detail">
+                  {selectedVariant.sizes.map(size => (
+                    <div key={size.id} className="size-detail-item-inline">
+                      <span className="size-summary">
+                        {size.sizeName} : {formatPrice(size.price).replace('₫', 'đ')} - SL: {size.quantity}
                       </span>
-                    </p>
-                  </div>
-                  <div className="info-group">
-                    <label>Trạng thái:</label>
-                    <p className="info-value">
-                      <span className={`badge bg-${PRODUCT_VARIANT_STATUS_COLORS[selectedVariant.status || 'ACTIVE']}`}>
-                        {PRODUCT_VARIANT_STATUS_LABELS[selectedVariant.status || 'ACTIVE']}
-                      </span>
-                    </p>
-                  </div>
-                  
-                  {/* Size Details */}
-                  {selectedVariant.sizes && selectedVariant.sizes.length > 0 && (
-                    <div className="info-group">
-                      <label>Chi tiết theo kích thước:</label>
-                      <div className="sizes-detail">
-                        {selectedVariant.sizes.map(size => (
-                          <div key={size.id} className="size-detail-item">
-                            <div className="size-header">
-                              <span className="size-name">{size.sizeName}</span>
-                              <span className={`size-availability ${size.available ? 'available' : 'unavailable'}`}>
-                                {size.available ? 'Có sẵn' : 'Hết hàng'}
-                              </span>
-                            </div>
-                            <div className="size-info">
-                              <span className="size-price">{formatPrice(size.price)}</span>
-                              <span className="size-quantity">SL: {size.quantity}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
+            )}
 
-              {/* Variant Images Gallery */}
-              <div className="col-lg-8">
-                <div className="variant-images-section">
-                  <h5 className="section-title">
-                    <i className="bi bi-images me-2"></i>
-                    Thư viện ảnh ({selectedVariant.images?.length || 0})
-                  </h5>
-                  
-                  {selectedVariant.images && selectedVariant.images.length > 0 ? (
-                    <div className="images-gallery">
-                      <div className="row g-3">
-                        {selectedVariant.images
-                          .sort((a, b) => a.displayOrder - b.displayOrder)
-                          .map((image, index) => (
-                          <div key={image.id || index} className="col-md-6 col-lg-4">
-                            <div className="gallery-item">
-                              <div className="image-container">
-                                <img
-                                  src={image.imageUrl}
-                                  alt={image.altText || `${product.name} - Ảnh ${index + 1}`}
-                                  className="gallery-image"
-                                  onError={(e) => {
-                                    e.target.src = 'https://via.placeholder.com/300x300?text=Error'
-                                  }}
-                                />
-                                
-                                {/* Primary badge */}
-                                {image.isPrimary && (
-                                  <div className="primary-badge">
-                                    <i className="bi bi-star-fill me-1"></i>
-                                    Ảnh chính
-                                  </div>
-                                )}
-                                
-                                {/* Image order */}
-                                <div className="image-order">
-                                  #{image.displayOrder + 1}
-                                </div>
+            {/* Variant Images Gallery */}
+            <div className="variant-images-section mt-4">
+              <h5 className="section-title">
+                <i className="bi bi-images me-2"></i>
+                Thư viện ảnh ({selectedVariant.images?.length || 0})
+              </h5>
 
-                                {/* Image actions */}
-                                <div className="image-actions">
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-light"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      window.open(image.imageUrl, '_blank')
-                                    }}
-                                    title="Xem ảnh gốc"
-                                  >
-                                    <i className="bi bi-arrows-fullscreen"></i>
-                                  </button>
-                                </div>
+              {selectedVariant.images && selectedVariant.images.length > 0 ? (
+                <div className="images-gallery">
+                  <div className="row g-3">
+                    {selectedVariant.images
+                      .sort((a, b) => a.displayOrder - b.displayOrder)
+                      .map((image, index) => (
+                      <div key={image.id || index} className="col-12 col-md-6 col-lg-4">
+                        <div className="gallery-item">
+                          <div className="image-container">
+                            <img
+                              src={image.imageUrl}
+                              alt={image.altText || `${product.name} - Ảnh ${index + 1}`}
+                              className="gallery-image"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/300x300?text=Error'
+                              }}
+                            />
+                            
+                            {/* Primary badge */}
+                            {image.isPrimary && (
+                              <div className="primary-badge">
+                                <i className="bi bi-star-fill me-1"></i>
+                                Ảnh chính
                               </div>
-                              
-                              <div className="image-info">
-                                <div className="image-url">
-                                  <small className="text-muted">
-                                    <i className="bi bi-link-45deg me-1"></i>
-                                    {image.imageUrl.length > 50 
-                                      ? `${image.imageUrl.substring(0, 50)}...` 
-                                      : image.imageUrl
-                                    }
-                                  </small>
-                                </div>
-                                {image.altText && (
-                                  <div className="image-alt">
-                                    <small className="text-muted">
-                                      <i className="bi bi-text-left me-1"></i>
-                                      {image.altText}
-                                    </small>
-                                  </div>
-                                )}
-                              </div>
+                            )}
+                            
+                            {/* Image order */}
+                            <div className="image-order">
+                              #{image.displayOrder + 1}
+                            </div>
+
+                            {/* Image actions */}
+                            <div className="image-actions">
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-light"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  window.open(image.imageUrl, '_blank')
+                                }}
+                                title="Xem ảnh gốc"
+                              >
+                                <i className="bi bi-arrows-fullscreen"></i>
+                              </button>
                             </div>
                           </div>
-                        ))}
+                          
+                          <div className="image-info">
+                            <div className="image-url">
+                              <small className="text-muted">
+                                <i className="bi bi-link-45deg me-1"></i>
+                                {image.imageUrl.length > 50 
+                                  ? `${image.imageUrl.substring(0, 50)}...` 
+                                  : image.imageUrl
+                                }
+                              </small>
+                            </div>
+                            {image.altText && (
+                              <div className="image-alt">
+                                <small className="text-muted">
+                                  <i className="bi bi-text-left me-1"></i>
+                                  {image.altText}
+                                </small>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="no-images-placeholder">
-                      <div className="text-center py-4">
-                        <i className="bi bi-image text-muted" style={{ fontSize: '3rem' }}></i>
-                        <p className="text-muted mt-3">
-                          Biến thể này chưa có ảnh nào
-                          {selectedVariant.imageUrl && (
-                            <span>
-                              <br />
-                              <small>Chỉ có ảnh legacy: </small>
-                              <a href={selectedVariant.imageUrl} target="_blank" rel="noopener noreferrer">
-                                Xem ảnh
-                              </a>
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="no-images-placeholder">
+                  <div className="text-center py-4">
+                    <i className="bi bi-image text-muted" style={{ fontSize: '3rem' }}></i>
+                    <p className="text-muted mt-3">
+                      Biến thể này chưa có ảnh nào
+                      {selectedVariant.imageUrl && (
+                        <span>
+                          <br />
+                          <small>Chỉ có ảnh legacy: </small>
+                          <a href={selectedVariant.imageUrl} target="_blank" rel="noopener noreferrer">
+                            Xem ảnh
+                          </a>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -597,4 +581,4 @@ const ProductDetail = () => {
   )
 }
 
-export default ProductDetail 
+export default ProductDetail
