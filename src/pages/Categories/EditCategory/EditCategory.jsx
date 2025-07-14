@@ -10,10 +10,51 @@ const EditCategory = () => {
   
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     type: 'DROPDOWN',
     status: 'ACTIVE'
   });
+
+  // Utility function to generate slug from Vietnamese text
+  const generateSlug = (text) => {
+    if (!text) return '';
+    
+    // Convert Vietnamese characters to ASCII
+    const vietnameseMap = {
+      'á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ': 'a',
+      'Á|À|Ả|Ã|Ạ|Ă|Ắ|Ằ|Ẳ|Ẵ|Ặ|Â|Ấ|Ầ|Ẩ|Ẫ|Ậ': 'A',
+      'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ': 'e',
+      'É|È|Ẻ|Ẽ|Ẹ|Ê|Ế|Ề|Ể|Ễ|Ệ': 'E',
+      'í|ì|ỉ|ĩ|ị': 'i',
+      'Í|Ì|Ỉ|Ĩ|Ị': 'I',
+      'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ': 'o',
+      'Ó|Ò|Ỏ|Õ|Ọ|Ô|Ố|Ồ|Ổ|Ỗ|Ộ|Ơ|Ớ|Ờ|Ở|Ỡ|Ợ': 'O',
+      'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự': 'u',
+      'Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự': 'U',
+      'ý|ỳ|ỷ|ỹ|ỵ': 'y',
+      'Ý|Ỳ|Ỷ|Ỹ|Ỵ': 'Y',
+      'đ': 'd',
+      'Đ': 'D'
+    };
+
+    let slug = text.trim().toLowerCase();
+    
+    // Replace Vietnamese characters
+    Object.keys(vietnameseMap).forEach(pattern => {
+      const regex = new RegExp(`[${pattern}]`, 'g');
+      slug = slug.replace(regex, vietnameseMap[pattern]);
+    });
+    
+    // Replace spaces with hyphens and remove special characters
+    slug = slug
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[^a-z0-9\-]/g, '') // Remove special characters
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+    
+    return slug;
+  };
 
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -59,6 +100,7 @@ const EditCategory = () => {
         if (result.success) {
           setFormData({
             name: result.data.name || '',
+            slug: result.data.slug || '',
             description: result.data.description || '',
             type: result.data.type || 'DROPDOWN',
             status: result.data.status || 'ACTIVE'
@@ -81,10 +123,33 @@ const EditCategory = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // For edit form, only regenerate slug if slug field is empty or unchanged from generated value
+    if (name === 'name') {
+      const currentSlug = formData.slug;
+      const expectedSlug = generateSlug(formData.name);
+      
+      // Only auto-update slug if it's empty or matches the expected generated slug
+      if (!currentSlug || currentSlug === expectedSlug) {
+        const newSlug = generateSlug(value);
+        setFormData(prev => ({
+          ...prev,
+          [name]: value,
+          slug: newSlug
+        }));
+      } else {
+        // User has manually edited slug, don't override
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -99,8 +164,8 @@ const EditCategory = () => {
     const newErrors = {};
 
     // Validate name
-    if (!formData.name || formData.name.trim().length < 3) {
-      newErrors.name = 'Tên danh mục phải có ít nhất 3 ký tự';
+    if (!formData.name || formData.name.trim().length < 2) {
+      newErrors.name = 'Tên danh mục phải có ít nhất 2 ký tự';
     } else if (!/.*[a-zA-Z]+.*/.test(formData.name)) {
       newErrors.name = 'Tên danh mục phải chứa ít nhất một ký tự chữ';
     } else if (formData.name.length > 100) {
@@ -292,6 +357,32 @@ const EditCategory = () => {
                 </div>
                 {errors.name && <div className="invalid-feedback d-block">{errors.name}</div>}
                 <div className="form-text">Tên danh mục cần rõ ràng, dễ hiểu.</div>
+              </div>
+
+              {/* Category Slug */}
+              <div className="mb-4">
+                <label htmlFor="slug" className="form-label">
+                  URL Slug (Đường dẫn thân thiện)
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="fas fa-link"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
+                    id="slug"
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleInputChange}
+                    placeholder="ao-polo-nam"
+                    maxLength={120}
+                  />
+                </div>
+                {errors.slug && <div className="invalid-feedback d-block">{errors.slug}</div>}
+                <div className="form-text">
+                  URL slug tự động tạo từ tên danh mục. Bạn có thể chỉnh sửa thủ công nếu cần.
+                </div>
               </div>
 
               {/* Category Description */}

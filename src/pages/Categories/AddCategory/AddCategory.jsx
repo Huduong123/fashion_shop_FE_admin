@@ -16,11 +16,52 @@ const AddCategory = () => {
   
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     type: 'DROPDOWN',
     status: 'ACTIVE',
     parentId: parentCategory?.id || null
   });
+
+  // Utility function to generate slug from Vietnamese text
+  const generateSlug = (text) => {
+    if (!text) return '';
+    
+    // Convert Vietnamese characters to ASCII
+    const vietnameseMap = {
+      'á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ': 'a',
+      'Á|À|Ả|Ã|Ạ|Ă|Ắ|Ằ|Ẳ|Ẵ|Ặ|Â|Ấ|Ầ|Ẩ|Ẫ|Ậ': 'A',
+      'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ': 'e',
+      'É|È|Ẻ|Ẽ|Ẹ|Ê|Ế|Ề|Ể|Ễ|Ệ': 'E',
+      'í|ì|ỉ|ĩ|ị': 'i',
+      'Í|Ì|Ỉ|Ĩ|Ị': 'I',
+      'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ': 'o',
+      'Ó|Ò|Ỏ|Õ|Ọ|Ô|Ố|Ồ|Ổ|Ỗ|Ộ|Ơ|Ớ|Ờ|Ở|Ỡ|Ợ': 'O',
+      'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự': 'u',
+      'Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự': 'U',
+      'ý|ỳ|ỷ|ỹ|ỵ': 'y',
+      'Ý|Ỳ|Ỷ|Ỹ|Ỵ': 'Y',
+      'đ': 'd',
+      'Đ': 'D'
+    };
+
+    let slug = text.trim().toLowerCase();
+    
+    // Replace Vietnamese characters
+    Object.keys(vietnameseMap).forEach(pattern => {
+      const regex = new RegExp(`[${pattern}]`, 'g');
+      slug = slug.replace(regex, vietnameseMap[pattern]);
+    });
+    
+    // Replace spaces with hyphens and remove special characters
+    slug = slug
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[^a-z0-9\-]/g, '') // Remove special characters
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+    
+    return slug;
+  };
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -51,10 +92,21 @@ const AddCategory = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Auto-generate slug when name changes
+    if (name === 'name') {
+      const generatedSlug = generateSlug(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        slug: generatedSlug
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -69,8 +121,8 @@ const AddCategory = () => {
     const newErrors = {};
 
     // Validate name
-    if (!formData.name || formData.name.trim().length < 3) {
-      newErrors.name = 'Tên danh mục phải có ít nhất 3 ký tự';
+    if (!formData.name || formData.name.trim().length < 2) {
+      newErrors.name = 'Tên danh mục phải có ít nhất 2 ký tự';
     } else if (!/.*[a-zA-Z]+.*/.test(formData.name)) {
       newErrors.name = 'Tên danh mục phải chứa ít nhất một ký tự chữ';
     } else if (formData.name.length > 100) {
@@ -276,6 +328,32 @@ const AddCategory = () => {
                     ? `Tên danh mục con thuộc "${parentCategory.name}"`
                     : 'Tên danh mục cha cần rõ ràng, dễ hiểu.'
                   }
+                </div>
+              </div>
+
+              {/* Category Slug */}
+              <div className="mb-4">
+                <label htmlFor="slug" className="form-label">
+                  URL Slug (Đường dẫn thân thiện)
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="fas fa-link"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
+                    id="slug"
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleInputChange}
+                    placeholder="ao-polo-nam"
+                    maxLength={120}
+                  />
+                </div>
+                {errors.slug && <div className="invalid-feedback d-block">{errors.slug}</div>}
+                <div className="form-text">
+                  URL slug được tự động tạo từ tên danh mục. VD: "Áo Polo Nam" → "ao-polo-nam"
                 </div>
               </div>
 
