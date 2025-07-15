@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react'
 import fileUploadService from '@/services/fileUploadService'
+import productVariantImageService from '@/services/productVariantImageService'
 import Toast from './Toast'
 import './VariantImageManager.css'
 
 const VariantImageManager = ({ 
   images = [], 
   onChange, 
+  variantId,
   label = "Ảnh biến thể", 
   maxImages = 10,
   required = false 
@@ -129,13 +131,60 @@ const VariantImageManager = ({
     showToast('success', 'Thành công', 'Đã xóa ảnh')
   }
 
-  const handleSetPrimary = (imageId) => {
-    const updatedImages = images.map(img => ({
+
+  const handleSetPrimary = async (imageId) => {
+    // --- BƯỚC 1: CẬP NHẬT GIAO DIỆN NGAY LẬP TỨC (OPTIMISTIC UPDATE) ---
+    // Logic này đảm bảo giao diện phản hồi nhanh và xử lý đúng cho trang "Thêm mới".
+    
+    // Kiểm tra ảnh có tồn tại không
+    const imageExists = images.some(img => img.id === imageId);
+    if (!imageExists) {
+      showToast('error', 'Lỗi', `Ảnh không tồn tại.`);
+      return;
+    }
+
+    // Tạo mảng ảnh mới với trạng thái isPrimary được cập nhật
+    const updatedImagesForUi = images.map(img => ({
       ...img,
       isPrimary: img.id === imageId
-    }))
-    onChange(updatedImages)
-    showToast('success', 'Thành công', 'Đã đặt làm ảnh chính')
+    }));
+    
+    // Cập nhật state ở component cha ngay lập tức
+    onChange(updatedImagesForUi);
+
+    // --- BƯỚC 2: ĐỒNG BỘ VỚI SERVER NẾU ĐANG Ở CHẾ ĐỘ CHỈNH SỬA ---
+    // Nếu `variantId` tồn tại, nghĩa là chúng ta đang sửa một variant đã có.
+    if (variantId) {
+      try {
+        // Gọi API để cập nhật thay đổi.
+        // LƯU Ý: Lệnh gọi này sẽ thất bại (báo lỗi 404 Not Found) nếu `imageId`
+        // là của một ảnh vừa được tải lên và chưa được lưu. Đây là hành vi mong muốn.
+        const result = await productVariantImageService.setPrimaryImage(imageId);
+
+        if (result.success) {
+          // API thành công: server đã cập nhật và trả về danh sách ảnh mới nhất.
+          // Ta đồng bộ lại state của client với dữ liệu từ server.
+          onChange(result.data);
+          showToast('success', 'Thành công', 'Đã cập nhật ảnh chính trên máy chủ.');
+        } else {
+          // API báo lỗi nhưng không phải lỗi mạng (ví dụ: ảnh mới chưa có ID).
+          // Giao diện đã đúng, ta chỉ cần thông báo nhẹ nhàng.
+          // Thay đổi sẽ được lưu khi người dùng bấm nút "Lưu" toàn bộ sản phẩm.
+          showToast('info', 'Lưu ý', 'Ảnh chính đã được chọn. Thay đổi sẽ được lưu khi cập nhật sản phẩm.');
+          console.warn(`API không thể đặt ảnh chính (ID: ${imageId}): ${result.message}.`);
+        }
+      } catch (error) {
+        // Bắt lỗi (thường là lỗi 404 khi ID ảnh chưa có trong DB).
+        // Giao diện người dùng đã được cập nhật ở Bước 1, nên ta không cần làm gì thêm.
+        // Trạng thái isPrimary đúng sẽ được gửi lên khi lưu toàn bộ form.
+        showToast('info', 'Lưu ý', 'Ảnh chính đã được chọn. Thay đổi sẽ được lưu khi cập nhật sản phẩm.');
+        console.error(`Lỗi khi gọi API setPrimaryImage (ID: ${imageId}):`, error);
+      }
+    } else {
+      // Nếu không có variantId, ta đang ở trang "Thêm mới".
+      // Việc cập nhật giao diện ở Bước 1 là đủ.
+      showToast('success', 'Thành công', 'Đã đặt làm ảnh chính.');
+    }
   }
 
   const handleUpdateAltText = (imageId, altText) => {
@@ -288,7 +337,7 @@ const VariantImageManager = ({
           <div className="card-body">
             <div className="row g-3">
               {images.map((image, index) => (
-                <div key={image.id} className="col-md-6 col-lg-4">
+                <div key={image.id} className="col-6">
                   <div
                     className={`image-item ${image.isPrimary ? 'primary' : ''}`}
                     draggable

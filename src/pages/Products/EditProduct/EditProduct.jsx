@@ -746,13 +746,22 @@ const EditProduct = () => {
                                 </select>
                               </div>
                               <div className="col-12">
-                                <VariantImageManager
-                                  label={`Ảnh biến thể ${index + 1}`}
-                                  images={variant.images || []}
-                                  onChange={(images) => handleVariantChange(index, 'images', images)}
-                                  maxImages={5}
-                                  required={true}
-                                />
+                                  <VariantImageManager
+                                    // --- THÊM DÒNG NÀY ---
+                                    // Truyền ID của biến thể để component con có thể gọi API
+                                    variantId={variant.id} 
+                                    // --- KẾT THÚC THAY ĐỔI ---
+                                    label={`Ảnh biến thể ${index + 1}`}
+                                    images={variant.images || []}
+                                    onChange={(images) => handleVariantChange(index, 'images', images)}
+                                    maxImages={10}
+                                    required={true}
+                                  />
+                                  {errors[`variant_${index}_images`] && (
+                                      <div className="invalid-feedback d-block">
+                                          {errors[`variant_${index}_images`]}
+                                      </div>
+                                  )}
                               </div>
                             </div>
                           </div>

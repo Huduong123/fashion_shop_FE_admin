@@ -84,16 +84,17 @@ const productVariantImageService = {
   // Set image as primary
   setPrimaryImage: async (imageId) => {
     try {
-      const response = await api.put(`/admin/product-variants/images/${imageId}/set-primary`)
+      const response = await api.put(`/admin/product-variants/images/${imageId}/set-primary`);
       return {
         success: true,
-        data: response.data
-      }
+        // API này trả về danh sách ảnh đã được cập nhật của variant đó
+        data: response.data 
+      };
     } catch (error) {
       return {
         success: false,
         message: error.response?.data?.message || 'Lỗi khi đặt ảnh chính'
-      }
+      };
     }
   },
 
