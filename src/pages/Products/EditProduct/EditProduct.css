@@ -344,3 +344,92 @@
     padding: 0.75rem !important;
   }
 }
+/* === BỔ SUNG CSS CHO NHÃN ẢNH CHÍNH === */
+
+/* Tạo một khung viền màu cam xung quanh ảnh chính */
+.edit-product-page .image-item.primary {
+  border-color: #fd7e14; /* Màu cam giống ảnh chụp màn hình */
+  box-shadow: 0 0 10px rgba(253, 126, 20, 0.3);
+}
+
+/* Container chứa ảnh, cần có position: relative để định vị nhãn */
+.edit-product-page .image-container {
+  position: relative;
+  overflow: hidden; /* Đảm bảo nhãn bo góc đẹp */
+}
+
+/* Kiểu dáng cho nhãn "Chính" */
+.edit-product-page .primary-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #fd7e14; /* Màu nền cam */
+  color: white;             /* Chữ màu trắng */
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-bottom-right-radius: 12px; /* Bo góc chéo */
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Khoảng cách giữa icon sao và chữ */
+  z-index: 10; /* Đảm bảo nhãn luôn nổi lên trên */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Icon ngôi sao bên trong nhãn */
+.edit-product-page .primary-badge .bi-star-fill {
+  font-size: 0.9em;
+}
+
+/* Phần tử bao bọc mỗi ảnh, thêm một chút hiệu ứng */
+.edit-product-page .image-item {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+/* Tạo một khung viền màu cam xung quanh ảnh chính */
+.edit-product-page .image-item.primary {
+  border-color: #fd7e14 !important; /* Thêm !important để đảm bảo ghi đè */
+  box-shadow: 0 0 10px rgba(253, 126, 20, 0.3);
+}
+
+/* Container chứa ảnh, cần có position: relative để định vị nhãn */
+.edit-product-page .image-container {
+  position: relative;
+  overflow: hidden; /* Đảm bảo nhãn bo góc đẹp */
+}
+
+/* Kiểu dáng cho nhãn "Chính" có ngôi sao */
+.edit-product-page .primary-badge {
+  position: absolute;
+  top: 8px; /* Điều chỉnh vị trí cho phù hợp */
+  left: 8px;
+  background: linear-gradient(45deg, #ffc107, #ff8c00);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Khoảng cách giữa icon sao và chữ */
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Icon ngôi sao bên trong nhãn */
+.edit-product-page .primary-badge .bi-star-fill {
+  font-size: 1em;
+}
+
+/* Phần tử bao bọc mỗi ảnh */
+.edit-product-page .image-item {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+}

@@ -28,7 +28,7 @@
 
 .image-container img {
   width: 100%;
-  height: 150px;
+  height: 250px; /* Tăng chiều cao ảnh tại đây */
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -129,7 +129,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .image-container img {
-    height: 120px;
+    height: 180px; /* Điều chỉnh lại cho màn hình nhỏ hơn */
   }
   
   .image-controls {
@@ -185,4 +185,4 @@
 .variant-image-manager .bg-light:hover {
   border-color: #007bff !important;
   background-color: #e3f2fd !important;
-} 
+}
