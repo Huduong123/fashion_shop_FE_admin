@@ -278,6 +278,13 @@ const PaymentMethodManagement = () => {
                         <td className="text-center">
                           <div className="action-buttons-inline">
                             <button 
+                              className="btn btn-outline-info btn-sm action-btn" 
+                              title="Xem chi tiết"
+                              onClick={() => navigate(`/payment-methods/detail/${method.id}`)}
+                            >
+                              <i className="bi bi-eye"></i>
+                            </button>
+                            <button 
                               className="btn btn-outline-warning btn-sm action-btn" 
                               title="Chỉnh sửa"
                               onClick={() => navigate(`/payment-methods/edit/${method.id}`)}
