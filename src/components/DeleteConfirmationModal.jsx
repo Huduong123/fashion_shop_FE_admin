@@ -1,17 +1,31 @@
-import { useState } from 'react'
+// src/components/DeleteConfirmationModal.jsx
+
+import React from 'react';
 
 const DeleteConfirmationModal = ({ 
   show, 
   onHide, 
   onConfirm, 
   itemName, 
-  type = 'product', // 'product' | 'category'
+  type = 'product', // 'product' | 'category' | 'payment-method'
   loading = false 
 }) => {
-  if (!show) return null
+  // Nếu không show, không render gì cả để tiết kiệm tài nguyên
+  if (!show) return null;
 
+  // Hàm để lấy cấu hình (văn bản, icon) dựa trên loại đối tượng cần xóa
   const getConfig = () => {
     switch (type) {
+      case 'payment-method':
+        return {
+          title: 'Xác nhận xóa phương thức',
+          icon: 'bi-credit-card-2-front-fill',
+          question: 'Bạn có chắc chắn muốn xóa phương thức thanh toán này?',
+          warning: 'Hành động này không thể hoàn tác. Phương thức này sẽ bị xóa vĩnh viễn.',
+          buttonText: 'Xóa phương thức',
+          buttonIcon: 'bi-trash3',
+          loadingText: 'Đang xóa...'
+        }
       case 'category':
         return {
           title: 'Xác nhận xóa danh mục',
@@ -36,23 +50,24 @@ const DeleteConfirmationModal = ({
     }
   }
 
-  const config = getConfig()
+  const config = getConfig();
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Lớp nền mờ phía sau */}
       <div 
         className="modal-backdrop fade show" 
         onClick={onHide}
         style={{ zIndex: 1040 }}
       ></div>
       
-      {/* Modal */}
+      {/* Nội dung Modal */}
       <div 
         className="modal fade show d-block" 
         style={{ zIndex: 1050 }}
         tabIndex="-1"
         role="dialog"
+        aria-modal="true"
       >
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
@@ -66,6 +81,7 @@ const DeleteConfirmationModal = ({
                 className="btn-close" 
                 onClick={onHide}
                 disabled={loading}
+                aria-label="Close"
               ></button>
             </div>
             
@@ -107,8 +123,7 @@ const DeleteConfirmationModal = ({
               >
                 {loading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status">
-                      <span className="visually-hidden">Loading...</span>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true">
                     </span>
                     {config.loadingText}
                   </>
@@ -127,4 +142,4 @@ const DeleteConfirmationModal = ({
   )
 }
 
-export default DeleteConfirmationModal 
+export default DeleteConfirmationModal;
