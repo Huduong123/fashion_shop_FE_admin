@@ -1,0 +1,91 @@
+/* src/pages/admin/payment-method/PaymentMethodDetail.css */
+
+.payment-method-detail-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+/* Tái sử dụng style header từ trang Add/Edit */
+.payment-method-detail-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+}
+  
+.payment-method-detail-page .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.payment-method-detail-page .breadcrumb {
+    margin-bottom: 0.5rem;
+}
+
+.detail-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+    margin-bottom: 1.5rem;
+}
+
+.detail-card .card-header {
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+}
+
+.detail-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.detail-list {
+    font-size: 0.95rem;
+}
+
+.detail-item {
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.detail-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.detail-item:first-child {
+    padding-top: 0;
+}
+
+.detail-item dt {
+    font-weight: 500;
+    color: #6b7280;
+    width: 30%;
+    flex-shrink: 0;
+}
+
+.detail-item dd {
+    margin-left: auto;
+    width: 70%;
+    color: #111827;
+    font-weight: 500;
+    text-align: right;
+}
+
+.detail-item dd code {
+    background-color: #e5e7eb;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #4b5563;
+}
+
+.detail-image {
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+}
