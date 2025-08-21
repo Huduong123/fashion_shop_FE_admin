@@ -25,6 +25,9 @@ import OrderDetail from './pages/Order/OrderDetail/OrderDetail'
 import authService from '@/services/authService'
 import AccessDenied from './pages/AccessDenied'
 import NotFound from './pages/NotFound/NotFound'
+import PaymentMethodManagement from './pages/PaymentMethod/PaymentMethodManagement'
+import AddPaymentMethod from './pages/PaymentMethod/AddPaymentMethod/AddPaymentMethod'
+import EditPaymentMethod from './pages/PaymentMethod/EditPaymentMethod/EditPaymentMethod'
 import './App.css'
 
 // Public Route Component (redirect to dashboard if logged in)
@@ -109,6 +112,9 @@ function App() {
           <Route path="sellers" element={<div>Sellers Page (Coming Soon)</div>} />
           <Route path="coupons" element={<div>Coupons Page (Coming Soon)</div>} />
           <Route path="reviews" element={<div>Reviews Page (Coming Soon)</div>} />
+          <Route path="payment-methods" element={<PaymentMethodManagement />} />
+          <Route path="payment-methods/add" element={<AddPaymentMethod />} />
+          <Route path="payment-methods/edit/:id" element={<EditPaymentMethod />} />
           <Route path="image-demo" element={<ImageDemo />} />
         </Route>
 

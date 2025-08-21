@@ -1,0 +1,766 @@
+
+/* =================================================================== */
+/* 1. OPTIMIZATION & ANIMATION DISABLE (CHO HIỆU NĂNG TỐT) */
+/* =================================================================== */
+
+* {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Các quy tắc tắt animation và tối ưu hóa hiệu năng khác được giữ nguyên */
+  .orders-table, .table, .table *, .card, .btn {
+    will-change: auto !important;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    animation: none !important;
+    transition: none !important;
+  }
+  .table-hover > tbody > tr:hover > * {
+    background-color: transparent !important;
+    color: inherit !important;
+  }
+  
+  /* =================================================================== */
+  /* 2. MAIN LAYOUT & WRAPPER (KHUNG VIỀN CHO BẢNG VÀ PHÂN TRANG) */
+  /* =================================================================== */
+  
+  .order-table-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+  }
+  
+  /* =================================================================== */
+  /* 3. ENHANCED TABLE STYLES (GIAO DIỆN BẢNG CHO ĐƠN HÀNG) */
+  /* =================================================================== */
+  
+  .orders-table {
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+  
+  .orders-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+    border-top: none;
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+  }
+  
+  .orders-table thead th i {
+    color: #6c757d;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .order-row td {
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  /* Thêm màu nền xen kẽ cho các dòng để dễ đọc */
+  .order-row:nth-child(even) {
+    background-color: #fdfdfd;
+  }
+  
+  /* Bỏ viền trên của dòng đầu tiên để không bị double-border với header */
+  .orders-table tbody tr:first-child td {
+    border-top: none;
+  }
+  
+  /* Order Info Styling */
+  .order-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .order-id {
+    color: #212529;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Customer Info Styling */
+  .customer-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .customer-name {
+    color: #212529;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .customer-email {
+    color: #495057;
+    font-size: 0.875rem;
+  }
+  
+  .email-value {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .phone-value {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+  
+  /* Currency styling */
+  .currency-value {
+    color: #1cc88a;
+    font-size: 0.9rem;
+  }
+  
+  .items-count {
+    color: #495057;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  
+  /* Status Badges & Select */
+  .status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 4px;
+    border: none !important;
+  }
+  
+  .status-badge option {
+    color: #1e1e1e !important;
+    background-color: white !important;
+  }
+  
+  /* Status Badge Colors (matching Account.css pattern) */
+  .bg-warning-subtle {
+    background: #fff3cd !important;
+    color: #856404 !important;
+  }
+  .bg-info-subtle {
+    background: #d1ecf1 !important;
+    color: #0c5460 !important;
+  }
+  .bg-success-subtle {
+    background: #d4edda !important;
+    color: #155724 !important;
+  }
+  .bg-danger-subtle {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+  }
+  .text-warning-emphasis { color: #856404 !important; }
+  .text-info-emphasis { color: #0c5460 !important; }
+  .text-success-emphasis { color: #155724 !important; }
+  .text-danger-emphasis { color: #721c24 !important; }
+  
+  /* Date Container */
+  .date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .date-value {
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 0.2rem;
+  }
+  
+  /* Management Action Buttons */
+  .action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.2rem;
+    justify-items: center;
+    align-items: center;
+    max-width: 72px;
+    margin: 0 auto;
+    padding: 0.2rem;
+  }
+  
+  .action-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0;
+  }
+  
+  .action-btn:hover, .action-btn:focus {
+    background-color: #f1f3f5;
+    border-color: transparent;
+    box-shadow: none !important;
+    transform: none !important;
+    opacity: 0.8;
+  }
+  
+  /* Specific action button colors */
+  .btn-outline-info:hover {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+  }
+  
+  .btn-outline-warning:hover {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+  }
+  
+  .btn-outline-danger:hover {
+    background-color: #ffebee;
+    border-color: #f44336;
+  }
+  
+  .btn-outline-success:hover {
+    background-color: #e8f5e8;
+    border-color: #4caf50;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #f5f5f5;
+    border-color: #9e9e9e;
+  }
+  
+  /* Grid positioning for 4 buttons */
+  .action-buttons .action-btn:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  .action-buttons .action-btn:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  .action-buttons .action-btn:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .action-buttons .action-btn:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  
+  /* =================================================================== */
+  /* 4. ENHANCED PAGINATION STYLES (GIAO DIỆN PHÂN TRANG) */
+  /* =================================================================== */
+  
+  .pagination-container {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .pagination-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    color: #495057;
+    font-size: 0.875rem;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .pagination-info {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    background-color: #e9ecef;
+    padding: 0.45rem 0.85rem;
+    border-radius: 0.375rem;
+  }
+  
+  /* Pagination buttons */
+  .pagination .page-link {
+    color: #495057;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+  
+  .pagination .page-item:first-child .page-link {
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+  }
+  
+  .pagination .page-item:last-child .page-link {
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+  }
+  
+  .pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: 500;
+  }
+  
+  .pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+  }
+  
+  .pagination .page-link:hover, .pagination .page-link:focus {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    text-decoration: none;
+  }
+  
+  .pagination .page-item.active .page-link:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+  /* Form controls */
+  .form-select-sm {
+    padding: 0.25rem 1.75rem 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    height: calc(1.5em + 0.5rem + 2px);
+    min-width: 60px;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+  }
+  
+  /* =================================================================== */
+  /* 5. SEARCH FORM STYLES */
+  /* =================================================================== */
+  
+  .search-form-container {
+    background-color: #ffffff !important;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-form-container .form-control,
+  .search-form-container .form-select {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border: 1px solid #ced4da !important;
+  }
+  
+  .search-form-container .form-control:focus,
+  .search-form-container .form-select:focus {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border-color: #4e73df !important;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15) !important;
+  }
+  
+  .search-form-container .form-control::placeholder {
+    color: #6c757d !important;
+    opacity: 0.7;
+  }
+  
+  .card .card-body {
+    padding: 1.25rem;
+  }
+  
+  .form-control-sm, .form-select-sm {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Search buttons */
+  .search-btn {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 60px;
+    justify-content: center;
+  }
+  
+  .search-btn i {
+    font-size: 0.75rem;
+  }
+  
+  /* Large search buttons - same height as form inputs */
+  .search-btn-large {
+    padding: 0.375rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 100px;
+    height: calc(1.5em + 0.75rem + 2px);
+    justify-content: center;
+    white-space: nowrap;
+  }
+  
+  .search-btn-large i {
+    font-size: 0.875rem;
+  }
+  
+  /* =================================================================== */
+  /* 6. RESPONSIVE DESIGN */
+  /* =================================================================== */
+  
+  @media (max-width: 768px) {
+    .pagination-container {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  
+    /* Hide some columns on smaller screens */
+    .orders-table th:nth-child(n+6),
+    .orders-table td:nth-child(n+6) {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .pagination-controls {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  
+    /* Hide more columns on mobile */
+    .orders-table th:nth-child(n+4),
+    .orders-table td:nth-child(n+4) {
+      display: none;
+    }
+  
+    .action-buttons {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 0.15rem;
+      max-width: 64px;
+      padding: 0.15rem;
+    }
+  
+    .action-btn {
+      width: 22px;
+      height: 22px;
+      font-size: 0.65rem;
+    }
+  
+    .search-btn {
+      padding: 0.25rem 0.5rem !important;
+      font-size: 0.75rem !important;
+      min-width: 50px;
+    }
+  
+    .search-btn-large {
+      padding: 0.375rem 0.75rem !important;
+      font-size: 0.8rem !important;
+      min-width: 85px;
+      height: calc(1.5em + 0.75rem + 2px);
+    }
+  
+    .search-btn-large i {
+      font-size: 0.8rem;
+    }
+  
+    /* Mobile specific adjustments for search buttons */
+    .col-md-2.d-flex {
+      flex-direction: column;
+      gap: 0.5rem !important;
+    }
+  
+    .search-btn-large {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  
+  /* =================================================================== */
+  /* 7. UTILITY CLASSES */
+  /* =================================================================== */
+  
+  .cursor-pointer { cursor: pointer; }
+  .badge-status { font-size: 0.75rem; }
+  .card-shadow { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+  
+  /* Hover effects for rows */
+  .order-row:hover {
+    background-color: #f8f9fa !important;
+  }
+  
+  /* Loading spinner container */
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+  
+  /* Empty state styling */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+  
+  .empty-state i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+  }
+  
+  .empty-state h4 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  
+  .empty-state p {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Order specific styling */
+  .order-management-container {
+    padding: 0;
+    background-color: #f8f9fa;
+  }
+  
+  .page-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  
+  /* Filter Card Styling */
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  /* Form Controls */
+  .form-control, .form-select {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border: 1px solid #e3e6f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: all 0.15s ease-in-out;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+  }
+  
+  .form-control::placeholder {
+    color: #6c757d !important;
+    opacity: 0.7;
+  }
+  
+  /* Force light theme for consistent appearance */
+  .order-table-wrapper,
+  .search-form-container,
+  .card {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+  }
+  
+  .table,
+  .table th,
+  .table td {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+  }
+  
+  /* Ensure all form controls are consistently styled */
+  input[type="text"],
+  input[type="email"], 
+  input[type="date"],
+  select,
+  .form-control,
+  .form-select {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border: 1px solid #ced4da !important;
+  }
+  
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="date"]:focus,
+  select:focus,
+  .form-control:focus,
+  .form-select:focus {
+    background-color: #ffffff !important;
+    color: #495057 !important;
+    border-color: #4e73df !important;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15) !important;
+  }
+  
+
+
+
+
+.payment-method-table-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+  }
+  
+  .main-table {
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+  
+  .main-table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+    border-top: none;
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+  }
+  
+  .data-row td {
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  .data-row:nth-child(even) {
+    background-color: #fdfdfd;
+  }
+  
+  .main-table tbody tr:first-child td {
+    border-top: none;
+  }
+  
+  /* Style cho ảnh của phương thức thanh toán */
+  .payment-method-image {
+    max-width: 80px;
+    max-height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  /* Style cho các nút hành động (inline thay vì grid) */
+  .action-buttons-inline {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  
+  /* Các style khác như pagination, search form, ... */
+  /* Bạn có thể copy từ file Order.css */
+  
+  .search-form-container {
+    background-color: #ffffff !important;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-btn-large {
+    padding: 0.375rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: calc(1.5em + 0.75rem + 2px);
+    justify-content: center;
+    white-space: nowrap;
+  }
+  
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+  }
+  
+  .bg-secondary-subtle {
+      background-color: #e2e3e5 !important;
+  }
+  
+  .text-secondary-emphasis {
+      color: #41464b !important;
+  }

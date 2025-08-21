@@ -70,7 +70,8 @@ const AdminLayout = () => {
       title: 'OTHER',
       items: [
         { name: 'Coupons', icon: 'bi-ticket-perforated', path: '/coupons' },
-        { name: 'Reviews', icon: 'bi-star', path: '/reviews' }
+        { name: 'Reviews', icon: 'bi-star', path: '/reviews' },
+        { name: 'Payment Method', icon: 'bi-credit-card', path: '/payment-methods' }
       ]
     }
   ]
