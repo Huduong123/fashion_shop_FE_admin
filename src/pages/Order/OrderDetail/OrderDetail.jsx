@@ -1,8 +1,10 @@
+// OrderDetail.jsx
+
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import orderService from '@/services/orderService'
 import Toast from '@/components/Toast'
-import './OrderDetail.css' // We will use the new CSS
+import './OrderDetail.css'
 
 const OrderDetail = () => {
   const { id } = useParams()
@@ -11,48 +13,74 @@ const OrderDetail = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState({ show: false, type: 'success', title: '', message: '' })
+  
+  const [isUpdating, setIsUpdating] = useState(false)
 
-  const statusOptions = [
+  // Định nghĩa các trạng thái cho OrderStatus
+  const orderStatusOptions = [
     { value: 'PENDING', label: 'Chờ xử lý', className: 'status-pending' },
-    { value: 'PAID', label: 'Đã thanh toán', className: 'status-paid' },
-    { value: 'SHIPPED', label: 'Đã gửi', className: 'status-shipped' },
+    { value: 'CONFIRMED', label: 'Đã xác nhận', className: 'status-confirmed' },
+    { value: 'SHIPPED', label: 'Đang giao hàng', className: 'status-shipped' },
+    { value: 'DELIVERED', label: 'Đã giao', className: 'status-delivered' },
+    { value: 'COMPLETED', label: 'Hoàn thành', className: 'status-completed' },
     { value: 'CANCELLED', label: 'Đã hủy', className: 'status-cancelled' }
   ]
-  
-  // --- Data Fetching and Handlers (kept from original) ---
+
+  // Định nghĩa các trạng thái cho PaymentStatus
+  const paymentStatusOptions = [
+    { value: 'UNPAID', label: 'Chưa thanh toán', className: 'payment-unpaid' },
+    { value: 'PAID', label: 'Đã thanh toán', className: 'payment-paid' },
+    { value: 'FAILED', label: 'Thanh toán thất bại', className: 'payment-failed' },
+    { value: 'REFUNDED', label: 'Đã hoàn tiền', className: 'payment-refunded' }
+  ]
+
   useEffect(() => {
+    const loadOrderDetail = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const result = await orderService.getOrderById(id)
+        if (result.success) {
+          setOrder(result.data)
+        } else {
+          setError(result.message)
+          showToast('error', 'Lỗi', result.message || 'Không thể tải chi tiết đơn hàng.')
+        }
+      } catch (err) {
+        setError('Failed to load order details')
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi tải dữ liệu.')
+      } finally {
+        setLoading(false)
+      }
+    }
     loadOrderDetail()
   }, [id])
-
-  const loadOrderDetail = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const result = await orderService.getOrderById(id)
-      if (result.success) {
-        setOrder(result.data)
-      } else {
-        setError(result.message)
-      }
-    } catch (err) {
-      setError('Failed to load order details')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleStatusUpdate = async (newStatus) => {
+  
+  // Hàm xử lý chung để cập nhật trạng thái
+  const handleUpdateStatus = async (newStatus, successMessage) => {
+    setIsUpdating(true)
     try {
       const result = await orderService.updateOrderStatus(id, newStatus)
       if (result.success) {
-        showToast('success', 'Thành công', 'Cập nhật trạng thái đơn hàng thành công')
-        setOrder(prev => ({ ...prev, status: newStatus }))
+        setOrder(prevOrder => ({ ...prevOrder, status: newStatus }))
+        showToast('success', 'Thành công', successMessage)
       } else {
-        showToast('error', 'Lỗi', result.message)
+        showToast('error', 'Lỗi', result.message || 'Cập nhật trạng thái thất bại.')
       }
     } catch (error) {
-      showToast('error', 'Lỗi', 'Có lỗi xảy ra khi cập nhật trạng thái')
+      showToast('error', 'Lỗi', 'Có lỗi xảy ra khi kết nối tới máy chủ.')
+    } finally {
+      setIsUpdating(false)
     }
+  }
+
+  // Hàm cụ thể cho từng hành động
+  const handleAcceptOrder = () => {
+    handleUpdateStatus('SHIPPED', 'Đã nhận đơn và chuyển sang trạng thái giao hàng.')
+  }
+
+  const handleMarkAsDelivered = () => {
+    handleUpdateStatus('DELIVERED', 'Đơn hàng đã được cập nhật trạng thái đã giao.')
   }
 
   const showToast = (type, title, message = '') => {
@@ -63,7 +91,6 @@ const OrderDetail = () => {
     setToast(prev => ({ ...prev, show: false }))
   }
 
-  // --- Utility Functions (kept from original) ---
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
@@ -76,19 +103,18 @@ const OrderDetail = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0)
   }
 
-  const getStatusInfo = (status) => {
-    return statusOptions.find(opt => opt.value === status) || { label: status, className: 'status-default' }
+  const getOrderStatusInfo = (status) => {
+    return orderStatusOptions.find(opt => opt.value === status) || { label: status, className: 'status-default' }
   }
 
-  const isStatusEditable = (status) => {
-    return status !== 'PAID' && status !== 'CANCELLED'
+  const getPaymentStatusInfo = (status) => {
+    return paymentStatusOptions.find(opt => opt.value === status) || { label: status, className: 'payment-default' }
   }
 
   const handlePrint = () => {
     window.print()
   }
 
-  // --- Render Logic ---
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
@@ -112,11 +138,12 @@ const OrderDetail = () => {
     )
   }
 
-  const statusInfo = getStatusInfo(order.status)
+  const orderStatusInfo = getOrderStatusInfo(order.status)
+  const paymentStatusInfo = getPaymentStatusInfo(order.paymentStatus)
 
   return (
     <div className="order-detail-page">
-      {/* Page Header */}
+      {/* Header trang */}
       <header className="page-header">
         <div className="header-left">
           <button className="btn btn-light me-3" onClick={() => navigate('/orders')}>
@@ -128,15 +155,57 @@ const OrderDetail = () => {
           </div>
         </div>
         <div className="header-actions">
+          {/* Nút Nhận đơn */}
+          {order.status === 'PENDING' && (
+            <button 
+              className="btn btn-success ms-2" 
+              onClick={handleAcceptOrder} 
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-check-circle me-2"></i>
+                  Nhận đơn
+                </>
+              )}
+            </button>
+          )}
+
+          {/* == THÊM NÚT "ĐÃ GIAO" VỚI ĐIỀU KIỆN HIỂN THỊ == */}
+          {order.status === 'SHIPPED' && (
+            <button 
+              className="btn btn-info ms-2" 
+              onClick={handleMarkAsDelivered} 
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Đang cập nhật...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-truck me-2"></i>
+                  Đã giao
+                </>
+              )}
+            </button>
+          )}
+
           <button className="btn btn-primary" onClick={handlePrint}>
             <i className="bi bi-printer me-2"></i>In hóa đơn
           </button>
         </div>
       </header>
 
-      {/* Invoice Card */}
+      {/* Thẻ hóa đơn */}
       <main className="invoice-card">
-        {/* Invoice Header */}
+        {/* Header hóa đơn */}
         <section className="invoice-header">
           <div className="info-group">
             <h5 className="info-title">Thông tin khách hàng</h5>
@@ -148,39 +217,24 @@ const OrderDetail = () => {
             <h5 className="info-title">Thông tin đơn hàng</h5>
             <p><strong>Ngày tạo:</strong> {formatDate(order.createdAt)}</p>
             <p><strong>Cập nhật:</strong> {formatDate(order.updatedAt)}</p>
-            <p><strong>Thanh toán:</strong> <span className="badge-payment-paid">ĐÃ THANH TOÁN</span></p>
+            <p>
+              <strong>Thanh toán:</strong>
+              <span className={`badge-payment ${paymentStatusInfo.className}`}>
+                {paymentStatusInfo.label}
+              </span>
+            </p>
           </div>
         </section>
 
-        {/* Order Status */}
+        {/* Trạng thái đơn hàng */}
         <section className="status-section">
-            <label htmlFor="status-select" className="status-label">Trạng thái đơn hàng:</label>
-            <div className="status-control">
-                <span className={`badge-status ${statusInfo.className}`}>{statusInfo.label}</span>
-                {isStatusEditable(order.status) ? (
-                  <select
-                      id="status-select"
-                      className="form-select status-select"
-                      value={order.status}
-                      onChange={(e) => handleStatusUpdate(e.target.value)}
-                  >
-                      {statusOptions.map(option => (
-                          <option key={option.value} value={option.value}>
-                              {option.label}
-                          </option>
-                      ))}
-                  </select>
-                ) : (
-                  <div className="status-readonly">
-                    <i className="bi bi-lock-fill me-2"></i>
-                    <span className="text-muted">Không thể thay đổi trạng thái</span>
-                  </div>
-                )}
-            </div>
+          <label className="status-label">Trạng thái đơn hàng:</label>
+          <div className="status-control">
+            <span className={`badge-status ${orderStatusInfo.className}`}>{orderStatusInfo.label}</span>
+          </div>
         </section>
 
-
-        {/* Order Items Table */}
+        {/* Bảng sản phẩm */}
         <section className="invoice-body">
           <h5 className="info-title">Chi tiết sản phẩm</h5>
           <div className="table-responsive">
@@ -223,7 +277,7 @@ const OrderDetail = () => {
           </div>
         </section>
 
-        {/* Invoice Footer / Summary */}
+        {/* Footer hóa đơn / Tổng kết */}
         <section className="invoice-footer">
           <div className="summary-section">
             <div className="summary-item">
@@ -243,12 +297,12 @@ const OrderDetail = () => {
       </main>
 
       {/* Toast Component */}
-      <Toast 
-        show={toast.show} 
-        onHide={hideToast} 
-        type={toast.type} 
-        title={toast.title} 
-        message={toast.message} 
+      <Toast
+        show={toast.show}
+        onHide={hideToast}
+        type={toast.type}
+        title={toast.title}
+        message={toast.message}
       />
     </div>
   )

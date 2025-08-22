@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import categoryService from '@/services/categoryService'
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
 import Toast from '@/components/Toast'
+
 import './Category.css'
 
 const CategoryManagement = () => {
