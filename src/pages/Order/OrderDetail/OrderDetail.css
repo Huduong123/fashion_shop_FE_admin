@@ -1,292 +1,302 @@
 /* OrderDetail.css - Modern Invoice Design */
 .order-detail-page {
-    background-color: #f4f7fa;
-    padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  }
-  
-  /* --- Header --- */
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  
-  .header-left {
-    display: flex;
-    align-items: center;
-  }
-  
-  .page-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0;
-  }
-  
-  .page-subtitle {
-    font-size: 0.9rem;
-    color: #7f8c8d;
-    margin: 0;
-  }
-  
-  .header-actions .btn {
-    font-weight: 500;
-  }
-  
-  /* --- Invoice Card --- */
-  .invoice-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    padding: 2.5rem;
-  }
-  
-  /* --- Info Sections --- */
-  .invoice-header {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .info-group {
-    max-width: 45%;
-  }
-  
-  .info-title {
-    font-size: 1rem;
+  background-color: #f4f7fa;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --- Header --- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.header-actions .btn {
+  font-weight: 500;
+}
+
+/* --- Invoice Card --- */
+.invoice-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+}
+
+/* --- Info Sections --- */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.info-group {
+  max-width: 45%;
+}
+
+.info-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-group p {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+.info-group p strong {
+  color: #333;
+  min-width: 80px;
+  display: inline-block;
+}
+
+/* --- Payment Status Badges --- */
+.badge-payment {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+.payment-paid {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+.payment-unpaid {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.payment-failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+.payment-refunded {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+.payment-default {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+/* --- Order Status Section --- */
+.status-section {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.status-label {
     font-weight: 600;
     color: #34495e;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .info-group p {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #555;
-  }
-  .info-group p strong {
-    color: #333;
-    min-width: 80px;
-    display: inline-block;
-  }
-  
-  /* --- Status Badges --- */
-  .badge-payment-paid {
-      background-color: #d1fae5;
-      color: #065f46;
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-  }
-  
-  .status-section {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid #e9ecef;
-    margin-bottom: 1.5rem;
+}
+.status-control {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
+}
+
+.badge-status {
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fff;
+    min-width: 120px;
+    text-align: center;
+}
+/* Order Status Colors */
+.status-pending { background-color: #f39c12; }   /* Orange */
+.status-confirmed { background-color: #3498db; } /* Blue */
+.status-shipped { background-color: #8e44ad; }   /* Purple */
+.status-delivered { background-color: #1abc9c; } /* Turquoise */
+.status-completed { background-color: #27ae60; } /* Green */
+.status-cancelled { background-color: #c0392b; } /* Red */
+.status-default { background-color: #7f8c8d; }   /* Gray */
+
+/* --- Items Table --- */
+.invoice-body {
+  margin-bottom: 2rem;
+}
+
+.order-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-items-table thead {
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.order-items-table th {
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.order-items-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+}
+.order-items-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.order-items-table td {
+  padding: 1.5rem 1rem;
+  vertical-align: middle;
+  color: #34495e;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.product-name {
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.product-variant {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* --- Summary Footer --- */
+.invoice-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.summary-section {
+  width: 100%;
+  max-width: 400px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.summary-item.total {
+  border-top: 2px solid #bdc3c7;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .order-detail-page {
+    padding: 1rem;
+  }
+  .invoice-card {
+    padding: 1.5rem;
+  }
+  .invoice-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .info-group {
+    max-width: 100%;
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 1rem;
   }
-  .status-label {
-      font-weight: 600;
-      color: #34495e;
-  }
-  .status-control {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-  }
-  
-  .badge-status {
-      padding: 0.4rem 1rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #fff;
-      min-width: 120px;
-      text-align: center;
-  }
-  .status-pending { background-color: #f39c12; }
-  .status-paid { background-color: #27ae60; }
-  .status-shipped { background-color: #8e44ad; }
-  .status-cancelled { background-color: #c0392b; }
-  .status-default { background-color: #7f8c8d; }
-  
-  .status-select {
-      width: auto;
-      font-weight: 500;
+}
+
+/* --- Print Styles --- */
+@media print {
+  body, .order-detail-page {
+    background-color: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  .status-readonly {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    color: #6c757d;
+  .page-header, .sidebar, #root > .navbar, .btn {
+    display: none !important;
   }
-  
-  /* --- Items Table --- */
-  .invoice-body {
-    margin-bottom: 2rem;
+
+  .order-detail-page {
+    box-shadow: none;
   }
-  
-  .order-items-table {
-    width: 100%;
-    border-collapse: collapse;
+
+  .invoice-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    padding: 20px;
   }
-  
-  .order-items-table thead {
-    border-bottom: 2px solid #bdc3c7;
+
+  .badge-status, .badge-payment {
+    border: 1px solid #ccc;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
   }
-  
-  .order-items-table th {
-    text-align: left;
-    padding: 1rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #7f8c8d;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .order-items-table tbody tr {
-    border-bottom: 1px solid #e9ecef;
-  }
-  .order-items-table tbody tr:last-child {
-    border-bottom: none;
-  }
-  
-  .order-items-table td {
-    padding: 1.5rem 1rem;
-    vertical-align: middle;
-    color: #34495e;
-  }
-  
-  .product-cell {
-    display: flex;
-    align-items: center;
-  }
-  
-  .product-image {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-right: 1rem;
-    border: 1px solid #e9ecef;
-  }
-  
-  .product-name {
-    font-weight: 600;
-    margin: 0;
-    color: #2c3e50;
-  }
-  
-  .product-variant {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    margin: 0;
-  }
-  
-  /* --- Summary Footer --- */
-  .invoice-footer {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .summary-section {
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .summary-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    font-size: 0.95rem;
-    color: #555;
-  }
-  
-  .summary-item.total {
-    border-top: 2px solid #bdc3c7;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    font-size: 1.1rem;
-    color: #2c3e50;
-  }
-  
+
   .total-amount {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #27ae60;
+     -webkit-print-color-adjust: exact;
+    color-adjust: exact;
   }
-  
-  /* --- Responsive --- */
-  @media (max-width: 992px) {
-    .order-detail-page {
-      padding: 1rem;
-    }
-    .invoice-card {
-      padding: 1.5rem;
-    }
-    .invoice-header {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .info-group {
-      max-width: 100%;
-      text-align: left !important;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-  }
-  
-  /* --- Print Styles --- */
-  @media print {
-    body, .order-detail-page {
-      background-color: #fff !important;
-      padding: 0 !important;
-      margin: 0 !important;
-    }
-  
-    .page-header, .sidebar, #root > .navbar, .btn, .status-select {
-      display: none !important;
-    }
-  
-    .order-detail-page {
-      box-shadow: none;
-    }
-  
-    .invoice-card {
-      box-shadow: none !important;
-      border: 1px solid #ddd;
-      border-radius: 0;
-      padding: 20px;
-    }
-  
-    .badge-status, .badge-payment-paid {
-      border: 1px solid #ccc;
-      -webkit-print-color-adjust: exact;
-      color-adjust: exact;
-    }
-  
-    .total-amount {
-       -webkit-print-color-adjust: exact;
-      color-adjust: exact;
-    }
-  }
+}

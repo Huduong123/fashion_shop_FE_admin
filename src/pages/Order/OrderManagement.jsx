@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import orderService from '@/services/orderService'
 import Toast from '@/components/Toast'
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal'
 import './Order.css'
 
 const OrderManagement = () => {
@@ -18,6 +19,13 @@ const OrderManagement = () => {
     status: '',
     startDate: '',
     endDate: ''
+  })
+  //Thêm state cho modal
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteModalState, setDeleteModalState] = useState({
+    show: false,
+    orderId: null,
+    orderIdentifier: '' // Dùng để hiển thị tên trong modal
   })
 
   // State cho các filter đã được áp dụng sau khi nhấn nút "Tìm kiếm"
@@ -38,8 +46,10 @@ const OrderManagement = () => {
   const statusOptions = [
     { value: '', label: 'Tất cả trạng thái' },
     { value: 'PENDING', label: 'Chờ xử lý' },
-    { value: 'PAID', label: 'Đã thanh toán' },
-    { value: 'SHIPPED', label: 'Đã gửi' },
+    { value: 'CONFIRMED', label: 'Đã xác nhận' },
+    { value: 'SHIPPED', label: 'Đang giao hàng' },
+    { value: 'DELIVERED', label: 'Đã giao' },
+    { value: 'COMPLETED', label: 'Hoàn thành' },
     { value: 'CANCELLED', label: 'Đã hủy' }
   ]
 
@@ -50,7 +60,7 @@ const OrderManagement = () => {
     
     try {
       const params = {
-        page: currentPage - 1, // Backend sử dụng 0-based indexing
+        page: currentPage - 1,
         size: ordersPerPage,
         sort: 'createdAt,desc'
       }
@@ -145,22 +155,39 @@ const OrderManagement = () => {
     }
   }
 
-  const handleDeleteOrder = async (orderId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-      try {
-        const result = await orderService.deleteOrder(orderId)
-        if (result.success) {
-          showToast('success', 'Thành công', 'Đã xóa đơn hàng')
-          loadOrders() // Refresh the list
-        } else {
-          showToast('error', 'Lỗi', result.message)
-        }
-      } catch (error) {
-        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi xóa đơn hàng')
-      }
-    }
+  // 3. Sửa lại hàm này để MỞ modal
+  const handleDeleteOrder = (order) => {
+    setDeleteModalState({
+      show: true,
+      orderId: order.id,
+      orderIdentifier: `Đơn hàng #${order.id}`
+    })
   }
+// Hàm đóng modal
+const handleCloseModal = () => {
+  setDeleteModalState({ show: false, orderId: null, orderIdentifier: '' })
+}
 
+// 4. Tạo hàm mới để XÁC NHẬN xóa
+const handleConfirmDelete = async () => {
+  if (!deleteModalState.orderId) return
+  
+  setIsDeleting(true)
+  try {
+    const result = await orderService.deleteOrder(deleteModalState.orderId)
+    if (result.success) {
+      showToast('success', 'Thành công', result.message || 'Đã xóa đơn hàng và hoàn kho thành công.')
+      loadOrders() // Tải lại danh sách đơn hàng
+    } else {
+      showToast('error', 'Lỗi', result.message)
+    }
+  } catch (error) {
+    showToast('error', 'Lỗi', 'Có lỗi xảy ra khi xóa đơn hàng.')
+  } finally {
+    setIsDeleting(false)
+    handleCloseModal()
+  }
+}
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -186,7 +213,10 @@ const OrderManagement = () => {
   const isStatusEditable = (status) => {
     return status !== 'PAID' && status !== 'CANCELLED'
   }
-
+  const canDeleteOrder = (status) => {
+    const deletableStatuses = ['PENDING', 'CANCELLED'];
+    return deletableStatuses.includes(status);
+  }
   const paginationData = useMemo(() => {
     return {
       indexOfFirstOrder: paginationInfo.number * paginationInfo.size,
@@ -355,7 +385,7 @@ const OrderManagement = () => {
                 <tbody>
                   {orders.map((order, index) => {
                     const createdDate = formatDate(order.createdAt)
-                    
+                    const isDeletable = canDeleteOrder(order.status) 
                     return (
                       <tr key={order.id} className="order-row">
                         <td className="text-center"><span className="fw-bold">{paginationData.indexOfFirstOrder + index + 1}</span></td>
@@ -431,13 +461,15 @@ const OrderManagement = () => {
                             >
                               <i className="bi bi-pencil"></i>
                             </button>
-                            <button 
-                              className="btn btn-outline-danger btn-sm action-btn" 
-                              title="Xóa"
-                              onClick={() => handleDeleteOrder(order.id)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
+                            {isDeletable && (
+                              <button 
+                                className="btn btn-outline-danger btn-sm action-btn" 
+                                title="Xóa"
+                                onClick={() => handleDeleteOrder(order)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -537,7 +569,15 @@ const OrderManagement = () => {
         )}
       </div>
 
-      {/* Toast */}
+      {/* 5. Render Modal và Toast */}
+      <DeleteConfirmationModal
+        show={deleteModalState.show}
+        onHide={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        itemName={deleteModalState.orderIdentifier}
+        type="order" // Truyền type mới
+        loading={isDeleting}
+      />
       <Toast 
         show={toast.show} 
         onHide={hideToast} 

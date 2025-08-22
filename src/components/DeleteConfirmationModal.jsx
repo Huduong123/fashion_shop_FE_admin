@@ -7,15 +7,24 @@ const DeleteConfirmationModal = ({
   onHide, 
   onConfirm, 
   itemName, 
-  type = 'product', // 'product' | 'category' | 'payment-method'
+  type = 'product', // 'product' | 'category' | 'payment-method' | 'order'
   loading = false 
 }) => {
-  // Nếu không show, không render gì cả để tiết kiệm tài nguyên
   if (!show) return null;
 
-  // Hàm để lấy cấu hình (văn bản, icon) dựa trên loại đối tượng cần xóa
   const getConfig = () => {
     switch (type) {
+      // THÊM CASE MỚI CHO ORDER
+      case 'order':
+        return {
+          title: 'Xác nhận xóa đơn hàng',
+          icon: 'bi-cart-x-fill', // Icon phù hợp hơn
+          question: 'Bạn có chắc chắn muốn xóa đơn hàng này?',
+          warning: 'Hành động này không thể hoàn tác. Số lượng sản phẩm trong đơn sẽ được hoàn trả về kho.',
+          buttonText: 'Xóa đơn hàng',
+          buttonIcon: 'bi-trash3',
+          loadingText: 'Đang xóa...'
+        }
       case 'payment-method':
         return {
           title: 'Xác nhận xóa phương thức',
@@ -52,6 +61,7 @@ const DeleteConfirmationModal = ({
 
   const config = getConfig();
 
+  // ... phần còn lại của component giữ nguyên ...
   return (
     <>
       {/* Lớp nền mờ phía sau */}
